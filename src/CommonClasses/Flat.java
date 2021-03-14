@@ -1,10 +1,17 @@
 package CommonClasses;
 
-import L6Server.ApartmentDescription.*;
 
+
+import CommonClasses.ApartmentDescription.*;
+
+import java.io.Serializable;
+import java.lang.instrument.Instrumentation;
 import java.util.Date;
 
-public class Flat implements Comparable<Flat>{
+public class Flat implements Serializable, Comparable<Flat>{
+
+    static final long serialVersionUID = 2;
+
     private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
@@ -12,7 +19,7 @@ public class Flat implements Comparable<Flat>{
     private Long area; //Значение поля должно быть больше 0
     private long numberOfRooms; //Значение поля должно быть больше 0
     private Furnish furnish; //Поле не может быть null
-    private View view; //Поле может быть null
+    private CommonClasses.ApartmentDescription.View view; //Поле может быть null
     private Transport transport; //Поле может быть null
     private House house; //Поле может быть null
 
@@ -61,7 +68,8 @@ public class Flat implements Comparable<Flat>{
         flat.setId(id);
         flat.setName(flatCreator.createName());
         flat.setCoordinates(flatCreator.createCoordinates());
-        flat.setCreationDate(new Date());
+//        flat.setCreationDate(new Date());
+        flat.setCreationDate(null);
         flat.setArea(flatCreator.createArea());
         flat.setNumberOfRooms(flatCreator.createNumberOfRooms());
         flat.setFurnish(flatCreator.createFurnish());
@@ -105,7 +113,7 @@ public class Flat implements Comparable<Flat>{
         return  this.transport;
     }
 
-    public View getView(){
+    public CommonClasses.ApartmentDescription.View getView(){
         return  this.view;
     }
     public Furnish getFurnish(){
@@ -148,12 +156,12 @@ public class Flat implements Comparable<Flat>{
         this.transport = transport;
     }
 
-    public void setView(View view) {
+    public void setView(CommonClasses.ApartmentDescription.View view) {
         this.view = view;
     }
 
 //    @Override
-//    public int compareTo(L6User.L6User.Flat o) {
+//    public int compareTo(CommonClasses.Flat o) {
 //
 //        if((getNumberOfRooms() > Integer.MAX_VALUE) | (o.getNumberOfRooms() > Integer.MAX_VALUE)){
 //            return (int)(getNumberOfRooms() - Integer.MAX_VALUE) - (int)(o.getNumberOfRooms() - Integer.MAX_VALUE);
@@ -165,7 +173,7 @@ public class Flat implements Comparable<Flat>{
 //    }
 
 //    @Override
-//    public int compareTo(L6User.L6User.Flat o) {
+//    public int compareTo(CommonClasses.Flat o) {
 //
 //        if((getNumberOfRooms() > Integer.MAX_VALUE) | (o.getNumberOfRooms() > Integer.MAX_VALUE)){
 //            return (int)(o.getNumberOfRooms() - Integer.MAX_VALUE) - (int)(getNumberOfRooms() - Integer.MAX_VALUE);

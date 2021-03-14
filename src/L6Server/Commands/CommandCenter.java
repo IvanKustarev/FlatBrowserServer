@@ -3,6 +3,7 @@ package L6Server.Commands;
 
 import CommonClasses.CommandsData;
 import CommonClasses.Creator;
+import CommonClasses.DataBlock;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
@@ -22,7 +23,7 @@ public class CommandCenter {
     AddCommand addCommand;
     AddIfMinCommand addIfMinCommand;
     ClearCommand clearCommand;
-//    ExecuteScriptCommand executeScriptCommand;
+    ExecuteScriptCommand executeScriptCommand;
 //    saveCommand saveCommand;
     FilterLessThanTransportCommand filterLessThanTransportCommand;
     HelpCommand helpCommand;
@@ -53,12 +54,12 @@ public class CommandCenter {
 //    SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand = new SumOfNumberOfRoomsCommand(flatCollection);
 //    UpdateIdCommand updateIdCommand = new UpdateIdCommand(flatCollection);
 
-    public CommandCenter(String fileAddress, AddCommand addCommand, AddIfMinCommand addIfMinCommand, ClearCommand clearCommand, /*ExecuteScriptCommand executeScriptCommand,*/ FilterLessThanTransportCommand filterLessThanTransportCommand, HelpCommand helpCommand, InfoCommand infoCommand, PrintFieldAscendingNumberOfRoomsCommand printFieldAscendingNumberOfRoomsCommand, RemoveByIdCommand removeByIdCommand, RemoveHeadCommand removeHeadCommand, RemoveLowerCommand removeLowerCommand, /*SaveCommand saveCommand,*/ ShowCommand showCommand, SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand, UpdateIdCommand updateId) {
+    public CommandCenter(String fileAddress, AddCommand addCommand, AddIfMinCommand addIfMinCommand, ClearCommand clearCommand, ExecuteScriptCommand executeScriptCommand, FilterLessThanTransportCommand filterLessThanTransportCommand, HelpCommand helpCommand, InfoCommand infoCommand, PrintFieldAscendingNumberOfRoomsCommand printFieldAscendingNumberOfRoomsCommand, RemoveByIdCommand removeByIdCommand, RemoveHeadCommand removeHeadCommand, RemoveLowerCommand removeLowerCommand, /*SaveCommand saveCommand,*/ ShowCommand showCommand, SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand, UpdateIdCommand updateId) {
         this.fileAddress = fileAddress;
         this.addCommand = addCommand;
         this.addIfMinCommand = addIfMinCommand;
         this.clearCommand = clearCommand;
-//        this.executeScriptCommand = executeScriptCommand;
+        this.executeScriptCommand = executeScriptCommand;
         this.filterLessThanTransportCommand = filterLessThanTransportCommand;
         this.helpCommand = helpCommand;
         this.infoCommand = infoCommand;
@@ -88,9 +89,9 @@ public class CommandCenter {
         filterLessThanTransportCommand.execute(command, transferCenter, commandsData);
     }
 
-//    public void executeScript(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-//        executeScriptCommand.execute(command);
-//    }
+    public void executeScript(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
+        executeScriptCommand.execute(command, transferCenter, commandsData);
+    }
 
     public void help(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
         helpCommand.execute(command, transferCenter, commandsData);
@@ -128,7 +129,7 @@ public class CommandCenter {
         sumOfNumberOfRoomsCommand.execute(command, transferCenter, commandsData);
     }
 
-    public void updateId(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
+    public void update(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
         updateIdCommand.execute(command, transferCenter, commandsData);
     }
 
@@ -155,13 +156,21 @@ public class CommandCenter {
     /**берёт из строки команды пользователя её параметр и пакует это всё в Commands объект*/
     private CommandsData packingCommandInCommandsObject(String command, Boolean commandWithParameter, Creator creator){
         CommandsData commandObject = null;
+
+
         CommandsData[] commands = CommandsData.values();
         for (int i =0; i<commands.length; i++){
             if(command.contains(commands[i].toString())){
                 commandObject = commands[i];
             }
         }
+
+//        System.out.println("====================");
+//        commandObject.getFlat().show();
+//        System.out.println("====================");
+
         commandObject.setCreator(creator);
+
         if(commandWithParameter){
 
             String[] comWords = command.split(" ");
@@ -180,9 +189,9 @@ public class CommandCenter {
                 }
                 break;
             }
+//            System.out.println(command);
             commandObject.setParameter(comWords[index+1]);
         }
-
         return commandObject;
     }
 
@@ -208,7 +217,7 @@ public class CommandCenter {
 //    }
 
     public void processingAndStartUserCommand(CommandsData commandsData, TransferCenter transferCenter){
-        CommandsData userCommand = packingCommandInCommandsObject(commandsData.toString() + commandsData.getParameter(), isCommandWithParameter(commandsData.toString() + commandsData.getParameter()), Creator.USER);
+        CommandsData userCommand = packingCommandInCommandsObject(commandsData.toString() + " " + commandsData.getParameter(), isCommandWithParameter(commandsData.toString() + commandsData.getParameter()), Creator.USER);
         if(userCommand.equals(CommandsData.EXECUTESCRIPT)){
             //дополнительные параметры для этой команды
             try {
@@ -228,7 +237,7 @@ public class CommandCenter {
     }
 
     /**запуск команды осуществляемый user-ом*/
-    public void processingAndStartScriptCommand(String command, CommandsData commandsData, BufferedReader bufferedReader){
+    public void processingAndStartScriptCommand(String command, CommandsData commandsData, BufferedReader bufferedReader, TransferCenter transferCenter, CommandsData otherCommandsData){
         CommandsData scriptCommand = packingCommandInCommandsObject(command, isCommandWithParameter(command), Creator.SCRIPT);
 
         boolean recursWasStarted = false;
@@ -249,13 +258,18 @@ public class CommandCenter {
         }
 
         if(recursWasStarted){
-            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
+            DataBlock dataBlock = new DataBlock();
+            dataBlock.setAllRight(true);
+            dataBlock.setPhrase("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
+            transferCenter.sendObjectToUser(dataBlock);
+
+//            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
         }
         else {
             if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
                 scriptCommand.addOpeningFile(scriptCommand.getParameter());
             }
-//            startCommand(scriptCommand);
+            startCommand(scriptCommand, transferCenter, otherCommandsData);
         }
     }
 
@@ -263,31 +277,30 @@ public class CommandCenter {
     public void startCommand(CommandsData commandObject, TransferCenter transferCenter, CommandsData commandsData){
         String commandName = gettingNormalFormatOfName(commandObject.toString());
 //        System.out.println(commandName);
+
         Method[] methods = getClass().getDeclaredMethods();
         for (Method method : methods){
             if(method.getName().equals(commandName)){
-//                if(commandName.equals("executeScript")){
-//                    executeScript(commandObject);
-//                }
-//                else {
-//                    try {
-//                        method.invoke(this, commandObject);
-//                    } catch (Exception e) {
-//                        System.out.println("Проблема с запуском метода из CommandCenter, тк поставлены неверные параметры!");
-//                    }
-//                }
-
-//                System.out.println(method.getName());
-//                if(commandsData.name().equals("INFO")){
-//                    info(commandObject, transferCenter, commandsData);
-//                }
-                try {
-                    method.invoke(this, commandObject, transferCenter, commandsData);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                if(commandName.equals("executeScript")){
+                    executeScript(commandObject, transferCenter, commandsData);
                 }
+                else {
+                    try {
+                        method.invoke(this, commandObject, transferCenter, commandsData);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+//                try {
+//                    method.invoke(this, commandObject, transferCenter, commandsData);
+//                } catch (IllegalAccessException e) {
+//                    e.printStackTrace();
+//                } catch (InvocationTargetException e) {
+//                    e.printStackTrace();
+//                }
 
             }
         }

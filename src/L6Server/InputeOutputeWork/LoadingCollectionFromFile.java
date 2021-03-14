@@ -1,7 +1,7 @@
 package L6Server.InputeOutputeWork;
 
 import CommonClasses.Flat;
-import L6Server.ApartmentDescription.*;
+import CommonClasses.ApartmentDescription.*;
 import L6Server.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

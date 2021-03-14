@@ -1,6 +1,8 @@
-package L6Server.ApartmentDescription;
+package CommonClasses.ApartmentDescription;
 
-public class House implements Attractive {
+import java.io.Serializable;
+
+public class House implements Attractive , Serializable {
     private String name; //Поле не может быть null
     private long year; //Значение поля должно быть больше 0
     private long numberOfFloors; //Максимальное значение поля: 86, Значение поля должно быть больше 0

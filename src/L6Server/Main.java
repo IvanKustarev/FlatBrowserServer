@@ -1,14 +1,19 @@
 package L6Server;//import L5.L6Server.InputeOutputeWork.LoadingCollectionFromFile;
 import CommonClasses.AbstractDataBlock;
+import CommonClasses.CommandsData;
+//import CommonClasses.ConnectionSupport.ConnectionSupporter;
 import CommonClasses.DataBlock;
+import CommonClasses.Flat;
 import L6Server.InputeOutputeWork.*;
 //import L6User.L6User.AnswerToServer;
 import org.w3c.dom.Document;
 
+import javax.swing.text.html.HTMLDocument;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -23,31 +28,19 @@ public class Main {
     /**метод отвечает за создание нового пользователя, запуск методов отвечающих за загрузку файла из памяти и запуск метода, получения команды*/
     public static void main(String[] args) throws ParserConfigurationException, IOException, ClassNotFoundException {
 
+
+//        fileAddress = gettingAddress(args);
+//        System.out.println("Файл успешно загружен.");
+////        fileAddress = "NewTest.txt";
+//
+//        loadFile(); //      Загружаем файл из пямяти в коллекцию
+//
+//
+//        WorkWithUser workWithUser = new WorkWithUser(flatCollection, fileAddress);
+//        workWithUser.startWorkWithUser();
+
         TransferCenter transferCenter = new TransferCenter();
-        DataBlock dataBlock = new DataBlock();
-        dataBlock.phrase = "ты лох!";
-        transferCenter.sendObjectToUser(dataBlock);
-        dataBlock = (DataBlock) transferCenter.receiveObjectFromUser();
-        System.out.println(dataBlock.phrase);
-
-
-
-
-
-
-
-//        User user = new User();
-
-        fileAddress = gettingAddress(args);
-        System.out.println("Файл успешно загружен.");
-//        fileAddress = "NewTest.txt";
-
-        loadFile(); //      Загружаем файл из пямяти в коллекцию
-
-        WorkWithUser workWithUser = new WorkWithUser(flatCollection, fileAddress);
-        workWithUser.startWorkWithUser();
-
-
+        transferCenter.requestsProcessing();
     }
 
     /**Загружает данные из файла в памяти в объект класса File. Проверяет на наличие ошибок доступа и прав к файлу в памяти*/

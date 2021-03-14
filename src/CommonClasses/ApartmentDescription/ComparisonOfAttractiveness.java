@@ -1,8 +1,10 @@
-package L6Server.ApartmentDescription;
+package CommonClasses.ApartmentDescription;
 
 import CommonClasses.Flat;
 
-public class ComparisonOfAttractiveness {
+import java.io.Serializable;
+
+public class ComparisonOfAttractiveness  implements Serializable {
     public static long compare(Flat flat){
         long levelOfPreference;
         levelOfPreference = flat.getNumberOfRooms();

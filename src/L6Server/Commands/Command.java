@@ -1,6 +1,6 @@
 package L6Server.Commands;
 
-import CommonClasses.CommandsData;
+import CommonClasses.*;
 import L6Server.TransferCenter;
 
 public interface Command {

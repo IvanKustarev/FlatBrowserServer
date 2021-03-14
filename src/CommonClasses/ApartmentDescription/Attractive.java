@@ -1,4 +1,4 @@
-package L6Server.ApartmentDescription;
+package CommonClasses.ApartmentDescription;
 
 public interface Attractive {
     public int levelAttractive();

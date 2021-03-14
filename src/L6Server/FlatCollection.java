@@ -1,8 +1,8 @@
 package L6Server;
 
 import CommonClasses.*;
-import L6Server.ApartmentDescription.ComparisonOfAttractiveness;
-import L6Server.ApartmentDescription.Transport;
+import CommonClasses.ApartmentDescription.ComparisonOfAttractiveness;
+import CommonClasses.ApartmentDescription.Transport;
 //import L6Server.Commands.CommandsData;
 import L6Server.InputeOutputeWork.UpLoadingCollectionToFile;
 
@@ -59,66 +59,117 @@ public class FlatCollection {
     }
 
     public void getInfo(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        System.out.println( "Тип: " + getClass().getTypeName() + "\n" +
+
+        DataBlock dataBlock = new DataBlock();
+        dataBlock.phrase = "Тип: " + getClass().getTypeName() + "\n" +
                 "Дата инициализации: " + dateOfInitialization + "\n" +
-                "Количество элементов: " + setOfFlats.size());
-//        transferCenter.sendAnswerToUser(new DataBlock(){
-//            public String phrase = "Тип: " + getClass().getTypeName() + "\n" +
-//                "Дата инициализации: " + dateOfInitialization + "\n" +
-//                "Количество элементов: " + setOfFlats.size();
-//
-//            @Override
-//            public boolean StartProcessingCommand(AbstractDataBlock answer){
-//                System.out.println(phrase);
-//                return  true;
-//            };
-//        });
+                "Количество элементов: " + setOfFlats.size();
+        if(command.getCreator().equals(Creator.USER)){
+            dataBlock.setAllRight(true);
+            transferCenter.sendObjectToUser(dataBlock);
+        }
+        else {
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
+        }
     }
 
     public void show(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
 
-        sortByAttractive();
+
+        Flat[] flats = new Flat[setOfFlats.toArray().length];
         Iterator iterator = setOfFlats.iterator();
+        int i = 0;
+        while (iterator.hasNext()){
+            flats[i] = (Flat)iterator.next();
+            i++;
+        }
 
-        if(iterator.hasNext()) {
-            Flat[] flatsArr = new Flat[setOfFlats.size()];
-            for (int i = 0; i < setOfFlats.size(); i++) {
+        SortFlatArrBySize sortFlatArrBySize = new SortFlatArrBySize();
 
-//                Flat flat = (Flat) iterator.next();
-//                flat.show();
-                flatsArr[i] = (Flat) iterator.next();
-            }
-//            transferCenter.sendAnswerToUser(new DataBlock(){
-//                private Flat[] flats = flatsArr;
-//                @Override
-//                public boolean StartProcessingCommand(AbstractDataBlock answer){
-//                    for (int i = 0; i < flats.length; i++) {
-//                        Flat flat = (Flat) iterator.next();
-//                        flat.show();
-//                    }
-//                    return  true;
-//                };
-//            });
+        DataBlock dataBlock = new DataBlock();
+
+        dataBlock.setFlats(sortFlatArrBySize.startSorting(flats));
+        dataBlock.setUserNeedToShowFlatArr(true);
+
+
+        if(dataBlock.getFlats().length == 0){
+            dataBlock.setPhrase("Коллекция пустая!");
+        }
+
+        if(command.getCreator().equals(Creator.USER))
+        {
+            dataBlock.setAllRight(true);
+            transferCenter.sendObjectToUser(dataBlock);
         }
         else {
-//            System.out.println("Коллекция пустая!");
-//            transferCenter.sendAnswerToUser(new DataBlock(){
-//                public String phrase = "Коллекция пустая!";
-//
-//                @Override
-//                public boolean StartProcessingCommand(AbstractDataBlock answer){
-//                    System.out.println(phrase);
-//                    return  false;
-//                };
-//            });
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
         }
+
+//        sortByAttractive();
+//        Iterator iterator = setOfFlats.iterator();
+
+
+
+//        if(iterator.hasNext()) {
+//            Flat[] flatsArr = new Flat[setOfFlats.size()];
+//            for (int i = 0; i < setOfFlats.size(); i++) {
+//
+////                Flat flat = (Flat) iterator.next();
+////                flat.show();
+//                flatsArr[i] = (Flat) iterator.next();
+//            }
+//
+//
+//
+////            transferCenter.sendAnswerToUser(new DataBlock(){
+////                private Flat[] flats = flatsArr;
+////                @Override
+////                public boolean StartProcessingCommand(AbstractDataBlock answer){
+////                    for (int i = 0; i < flats.length; i++) {
+////                        Flat flat = (Flat) iterator.next();
+////                        flat.show();
+////                    }
+////                    return  true;
+////                };
+////            });
+//        }
+//        else {
+////            System.out.println("Коллекция пустая!");
+////            transferCenter.sendAnswerToUser(new DataBlock(){
+////                public String phrase = "Коллекция пустая!";
+////
+////                @Override
+////                public boolean StartProcessingCommand(AbstractDataBlock answer){
+////                    System.out.println(phrase);
+////                    return  false;
+////                };
+////            });
+//        }
     }
 
     //рализация команды
     public void add(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        long flatID = createId();
-        Flat flat = Flat.createFlat(flatID);
-        setOfFlats.add(flat);
+        DataBlock dataBlock = new DataBlock();
+        if(command.getCreator().equals(Creator.USER)){
+            setOfFlats.add(commandsData.getFlat());
+            dataBlock.setPhrase("Объект добавлен в коллекцию!");
+            dataBlock.setAllRight(true);
+            transferCenter.sendObjectToUser(dataBlock);
+        }
+        else {
+//            System.out.println("aaaaaaaa");
+            long flatID = createId();
+            Flat flat = FlatCreatorForScript.createFlat(command, flatID);
+            setOfFlats.add(flat);
+            dataBlock.setPhrase("Объект добавлен в коллекцию!");
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
+        }
     }
 
     //используется при загрузке данных из файла (не является командой)
@@ -127,15 +178,27 @@ public class FlatCollection {
     }
 
     public void clear(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
+
         setOfFlats.clear();
-        System.out.println("Коллекция очищена!");
+//        System.out.println("Коллекция очищена!");
+        DataBlock dataBlock = new DataBlock();
+        dataBlock.setPhrase("Коллекция очищена!");
+        if(command.getCreator().equals(Creator.USER)){
+            dataBlock.setAllRight(true);
+            transferCenter.sendObjectToUser(dataBlock);
+        }
+        else {
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
+        }
     }
 
     public void save(FlatCollection flatCollection, String fileAddress) {
         UpLoadingCollectionToFile output = new UpLoadingCollectionToFile();
         try {
             output.save(output.convert(flatCollection), fileAddress);
-            System.out.println("Коллекция успешно сохранена");
+            System.out.println("Коллекция успешно сохранена!");
         } catch (TransformerException e) {
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
@@ -146,19 +209,59 @@ public class FlatCollection {
     public void removeHead(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
         Iterator iterator = setOfFlats.iterator();
         Flat flat;
+        DataBlock dataBlock = new DataBlock();
+
+        Flat[] flats = new Flat[setOfFlats.size()];
+        for(int i =0;i<setOfFlats.size();i++){
+            flats[i] = (Flat) setOfFlats.toArray()[i];
+        }
+
+        (new SortFlatArrBySize()).startSorting(flats);
+
         if(iterator.hasNext()){
-            flat = (Flat)iterator.next();
-            flat.show();
-            iterator.remove();
+
+            Flat[] flatForSending = new Flat[1];
+            flatForSending[0] = flats[0];
+
+            iterator = setOfFlats.iterator();
+            while (iterator.hasNext()){
+                Flat flatFromCollection = (Flat) iterator.next();
+                if(flatFromCollection.getId().equals(flats[0].getId())){
+                    dataBlock.setFlats(flatForSending);
+                    dataBlock.setUserNeedToShowFlatArr(true);
+                    if(command.getCreator().equals(Creator.USER)){
+                        dataBlock.setAllRight(true);
+                        transferCenter.sendObjectToUser(dataBlock);
+                    }
+                    else {
+                        dataBlock.setAllRight(false);
+                        transferCenter.sendObjectToUser(dataBlock);
+                        transferCenter.receiveObjectFromUser();
+                    }
+
+                    iterator.remove();
+                }
+            }
         }
         else {
-            System.out.println("Коллекция пустая!");
+            if(command.getCreator().equals(Creator.USER)){
+                dataBlock.setPhrase("Коллекция пустая!");
+                dataBlock.setAllRight(true);
+                transferCenter.sendObjectToUser(dataBlock);
+            }
+            else {
+                dataBlock.setPhrase("Коллекция пустая!");
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+                transferCenter.receiveObjectFromUser();
+            }
         }
     }
 
     public void sumOfNumberOfRooms(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
         Iterator iterator = setOfFlats.iterator();
         BigInteger numberOfRooms = BigInteger.valueOf(0);
+        DataBlock dataBlock = new DataBlock();
         if(iterator.hasNext()){
             while (iterator.hasNext()){
                 Flat flat = (Flat) iterator.next();
@@ -167,14 +270,27 @@ public class FlatCollection {
 //                    numberOfRooms
                     numberOfRooms = numberOfRooms.add(BigInteger.valueOf(flat.getNumberOfRooms()));
                 }catch (Exception e){
-                    System.out.println("Общее число комнат слишком большое! Перполнен BigInteger!");
+
+//                    System.out.println("Общее число комнат слишком большое! Перполнен BigInteger!");
+                    dataBlock.setPhrase("Общее число комнат слишком большое! Перполнен BigInteger!");
                 }
 
             }
-            System.out.println("Общее число комнат во всех квартирах: " + numberOfRooms);
+//            System.out.println("Общее число комнат во всех квартирах: " + numberOfRooms);
+            dataBlock.setPhrase("Общее число комнат во всех квартирах: " + numberOfRooms);
         }
         else {
-            System.out.println("В коллекции не квартир!");
+//            System.out.println("В коллекции нет квартир!");
+            dataBlock.setPhrase("В коллекции нет квартир!");
+        }
+        if(command.getCreator().equals(Creator.USER)){
+            dataBlock.setAllRight(true);
+            transferCenter.sendObjectToUser(dataBlock);
+        }
+        else {
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
         }
     }
 
@@ -182,6 +298,7 @@ public class FlatCollection {
         Iterator iterator = getIterator();
         long min;
         min = Long.MAX_VALUE;
+        DataBlock dataBlock = new DataBlock();
         if(iterator.hasNext()){
             while (iterator.hasNext()){
                 long flatAttractive = ComparisonOfAttractiveness.compare((Flat) iterator.next());
@@ -189,18 +306,42 @@ public class FlatCollection {
                     min = flatAttractive;
                 }
             }
-            Flat newFlat = Flat.createFlat(createId());
+
+            Flat newFlat = commandsData.getFlat();
             if(ComparisonOfAttractiveness.compare(newFlat) < min){
                 setOfFlats.add(newFlat);
+                dataBlock.setPhrase("Добавляем элемент в коллекцию!");
+            }
+            else {
+                //НАверное нужно переделать на слишком маленькую
+                dataBlock.setPhrase("Привлекательность элемента слишком большая!");
             }
         }
         else {
-            System.out.println("Пустая коллекция!");
+//            System.out.println("Пустая коллекция!");
+            dataBlock.setPhrase("Пустая коллекция!");
         }
+        if(command.getCreator().equals(Creator.USER)){
+            dataBlock.setAllRight(true);
+            transferCenter.sendObjectToUser(dataBlock);
+        }
+        else {
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
+        }
+
     }
 
     public void updateId(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        long id = Long.valueOf(command.getParameter());
+
+        long id;
+        if(command.getCreator().equals(Creator.USER)){
+            id = Long.valueOf(commandsData.getParameter());
+        }
+        else{
+            id = Long.valueOf(command.getParameter());
+        }
         Iterator iterator = setOfFlats.iterator();
         Long flatId = null;
         while (iterator.hasNext()){
@@ -210,42 +351,121 @@ public class FlatCollection {
                 iterator.remove();
             }
         }
+        DataBlock dataBlock = new DataBlock();
         if(flatId == null){
-            System.out.println("Неправильно введён ID!\nВведите ID занова.");
-            command.setParameter(informationGetter(command));
+            dataBlock.setPhrase("Неправильно введён ID!\nВведите ID занова:");
+            dataBlock.setServerNeedStringParameter(true);
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            DataBlock correctInfoFromUser = (DataBlock) transferCenter.receiveObjectFromUser();
+            command.setParameter(correctInfoFromUser.getParameter());
             updateId(command, transferCenter, commandsData);
         }
         else {
-            System.out.println("Приступаем к обновлению параметров файла с ID: " + id);
-            add(Flat.createFlat(id));
-            System.out.println("Файл обновлён!");
+            if(command.getCreator().equals(Creator.USER)){
+                DataBlock requestAboutElement = new DataBlock();
+                requestAboutElement.setServerNeedElementParameter(true);
+                requestAboutElement.setAllRight(false);
+                requestAboutElement.setPhrase("Приступаем к обновлению параметров файла с ID: " + id);
+                transferCenter.sendObjectToUser(requestAboutElement);
+                dataBlock = (DataBlock) transferCenter.receiveObjectFromUser();
+                Flat flat = dataBlock.getFlat();
+                flat.setId(id);
+                setOfFlats.add(flat);
+
+                dataBlock = new DataBlock();
+                dataBlock.setPhrase("Элемент обновлён!");
+                dataBlock.setAllRight(true);
+                transferCenter.sendObjectToUser(dataBlock);
+            }
+            else {
+                DataBlock requestAboutElement = new DataBlock();
+                requestAboutElement.setAllRight(false);
+                requestAboutElement.setPhrase("Приступаем к обновлению параметров файла с ID: " + id);
+                transferCenter.sendObjectToUser(requestAboutElement);
+                transferCenter.receiveObjectFromUser();
+                Flat flat = FlatCreatorForScript.createFlat(command, id);
+                setOfFlats.add(flat);
+
+                dataBlock = new DataBlock();
+                dataBlock.setPhrase("Элемент обновлён!");
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+                transferCenter.receiveObjectFromUser();
+            }
         }
     }
 
     public void removeById(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        long id = Long.valueOf(command.getParameter());
-        Iterator iterator = setOfFlats.iterator();
-        boolean nonElement = true;
-        while (iterator.hasNext()){
-            if(((Flat)iterator.next()).getId() == id){
-                iterator.remove();
-                nonElement = false;
-                System.out.println("Элемент удалён.");
+        if(command.getCreator().equals(Creator.USER)){
+            long id = Long.valueOf(commandsData.getParameter());
+            DataBlock dataBlock = new DataBlock();
+            Iterator iterator = setOfFlats.iterator();
+            boolean nonElement = true;
+            while (iterator.hasNext()){
+                if(((Flat)iterator.next()).getId() == id){
+                    iterator.remove();
+                    nonElement = false;
+                    dataBlock.setPhrase("Элемент удалён.");
+//                System.out.println("Элемент удалён.");
+                    dataBlock.setAllRight(true);
+                    transferCenter.sendObjectToUser(dataBlock);
+
+                }
+            }
+            if(nonElement){
+                dataBlock.setPhrase("Квартиры с таким ID не существует!\nПопробуйте ввести ID занова.");
+                dataBlock.setServerNeedStringParameter(true);
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+
+                dataBlock = (DataBlock) transferCenter.receiveObjectFromUser();
+                command.setParameter(dataBlock.getParameter());
+                removeById(command,transferCenter, commandsData);
             }
         }
-        if(nonElement){
-            System.out.println("Квартиры с таким ID не существует!\nПопробуйте ввести ID занова.");
-            command.setParameter(informationGetter(command));
-            removeById(command,transferCenter, commandsData);
+        else {
+            long id = Long.valueOf(command.getParameter());
+            DataBlock dataBlock = new DataBlock();
+            Iterator iterator = setOfFlats.iterator();
+            boolean nonElement = true;
+            while (iterator.hasNext()){
+                if(((Flat)iterator.next()).getId() == id){
+                    iterator.remove();
+                    nonElement = false;
+                    dataBlock.setPhrase("Элемент удалён.");
+//                System.out.println("Элемент удалён.");
+                    dataBlock.setAllRight(false);
+                    transferCenter.sendObjectToUser(dataBlock);
+                    transferCenter.receiveObjectFromUser();
+                }
+            }
+            if(nonElement) {
+                dataBlock.setPhrase("Квартиры с таким ID не существует!\nПопробуйте ввести ID занова.");
+                dataBlock.setServerNeedStringParameter(true);
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+
+                dataBlock = (DataBlock) transferCenter.receiveObjectFromUser();
+                command.setParameter(dataBlock.getParameter());
+                removeById(command, transferCenter, commandsData);
+            }
         }
     }
 
     public void removeLower(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        System.out.println("Введите элемент для спавнения.");
-        Flat flatForeCompare = Flat.createFlat(Long.valueOf(0));
+        Flat flatForeCompare;
+        if(command.getCreator().equals(Creator.USER)){
+            flatForeCompare = commandsData.getFlat();
+        }
+        else {
+            flatForeCompare = FlatCreatorForScript.createFlat(command, 0);
+        }
+
         long compareFlatAttractive = ComparisonOfAttractiveness.compare(flatForeCompare);
         Iterator iterator = setOfFlats.iterator();
         boolean nonElement = true;
+        DataBlock dataBlock = new DataBlock();
 
         if (iterator.hasNext()) {
             while (iterator.hasNext()) {
@@ -254,15 +474,50 @@ public class FlatCollection {
                     nonElement = false;
                 }
             }
-            if(nonElement){
-                System.out.println("Нет подходящих для удаления элементов");
+            if(command.getCreator().equals(Creator.USER)){
+                if(nonElement){
+//                System.out.println("Нет подходящих для удаления элементов");
+                    dataBlock.setPhrase("Нет подходящих для удаления элементов");
+                    dataBlock.setAllRight(true);
+                    transferCenter.sendObjectToUser(dataBlock);
+                }
+                else {
+//                System.out.println("Подходящие элементы были удалены.");
+                    dataBlock.setPhrase("Подходящие элементы были удалены.");
+                    dataBlock.setAllRight(true);
+                    transferCenter.sendObjectToUser(dataBlock);
+                }
             }
             else {
-                System.out.println("Подходящие элементы были удалены.");
+                if (nonElement) {
+//                System.out.println("Нет подходящих для удаления элементов");
+                    dataBlock.setPhrase("Нет подходящих для удаления элементов");
+                    dataBlock.setAllRight(false);
+                    transferCenter.sendObjectToUser(dataBlock);
+                    transferCenter.receiveObjectFromUser();
+                } else {
+//                System.out.println("Подходящие элементы были удалены.");
+                    dataBlock.setPhrase("Подходящие элементы были удалены.");
+                    dataBlock.setAllRight(false);
+                    transferCenter.sendObjectToUser(dataBlock);
+                    transferCenter.receiveObjectFromUser();
+                }
             }
         }
         else {
-            System.out.println("Коллекция пустая!");
+            if(command.getCreator().equals(Creator.USER)){
+//                System.out.println("Коллекция пустая!");
+                dataBlock.setPhrase("Коллекция пустая!");
+                dataBlock.setAllRight(true);
+                transferCenter.sendObjectToUser(dataBlock);
+            }
+            else {
+//                System.out.println("Коллекция пустая!");
+                dataBlock.setPhrase("Коллекция пустая!");
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+                transferCenter.receiveObjectFromUser();
+            }
         }
     }
 
@@ -280,6 +535,8 @@ public class FlatCollection {
             System.out.println("Проблемма с загрузкой коллекции в массив в методе printFieldAscendingNumberOfRooms");
         }
 
+        DataBlock dataBlock = new DataBlock();
+
         boolean repeat = true;
         if(flats.length > 1) {
             while (repeat) {
@@ -293,17 +550,51 @@ public class FlatCollection {
                     }
                 }
             }
-            System.out.println("Выводим элементы в порядке возрастания количества комнат:");
+            String phrase;
+            phrase = "Выводим элементы в порядке возрастания количества комнат:\n";
             for (int i =0;i<flats.length;i++){
-                System.out.println("ID - " + flats[i].getId() + " numberOfRooms - " + flats[i].getNumberOfRooms());
+                phrase += "ID - " + flats[i].getId() + " numberOfRooms - " + flats[i].getNumberOfRooms() + "\n";
+            }
+            if(command.getCreator().equals(Creator.USER)){
+                dataBlock.setPhrase(phrase);
+                dataBlock.setAllRight(true);
+                transferCenter.sendObjectToUser(dataBlock);
+            }
+            else {
+                dataBlock.setPhrase(phrase);
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+                transferCenter.receiveObjectFromUser();
             }
         }
         else {
-            if(flats.length == 1){
-                System.out.println("В коллекции содержится всего один элемент: ID - " + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms());
+            if(command.getCreator().equals(Creator.USER)){
+                if(flats.length == 1){
+                    dataBlock.setPhrase("В коллекции содержится всего один элемент: ID - " + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
+                    dataBlock.setAllRight(true);
+                    transferCenter.sendObjectToUser(dataBlock);
+                }
+                else {
+//                System.out.println("Коллекция пустая!");
+                    dataBlock.setPhrase("Коллекция пустая!");
+                    dataBlock.setAllRight(true);
+                    transferCenter.sendObjectToUser(dataBlock);
+                }
             }
             else {
-                System.out.println("Коллекция пустая!");
+                if(flats.length == 1){
+                    dataBlock.setPhrase("В коллекции содержится всего один элемент: ID - " + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
+                    dataBlock.setAllRight(false);
+                    transferCenter.sendObjectToUser(dataBlock);
+                    transferCenter.receiveObjectFromUser();
+                }
+                else {
+//                System.out.println("Коллекция пустая!");
+                    dataBlock.setPhrase("Коллекция пустая!");
+                    dataBlock.setAllRight(false);
+                    transferCenter.sendObjectToUser(dataBlock);
+                    transferCenter.receiveObjectFromUser();
+                }
             }
         }
 
@@ -312,11 +603,20 @@ public class FlatCollection {
     public void filterLessThanTransport(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
 
         Transport transport;
+        DataBlock dataBlock = new DataBlock();
         try {
-            transport = Transport.valueOf(command.getParameter());
+            if(command.getCreator().equals(Creator.USER)){
+                transport = Transport.valueOf(commandsData.getParameter());
+            }
+            else {
+                transport = Transport.valueOf(command.parameter);
+            }
         }catch (Exception e){
-            System.out.println("Такого варианта транспора не существует!");
-            transport = createTransport(command);
+            dataBlock.setAllRight(false);
+            dataBlock.setPhrase("Такого варианта транспора не существует!");
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
+            transport = createTransport(command, transferCenter);
         }
 
         boolean wasPrinted = false;
@@ -326,42 +626,95 @@ public class FlatCollection {
                 Flat flat = (Flat)iterator.next();
                 if(flat.getTransport() != null){
                     if(flat.getTransport().levelAttractive() < transport.levelAttractive()){
-                        flat.show();
-                        wasPrinted = true;
+//                        flat.show();
+                        Flat[] flats = new Flat[1];
+                        flats[0] = flat;
+                        if(command.getCreator().equals(Creator.USER)){
+                            dataBlock.setFlats(flats);
+                            dataBlock.setUserNeedToShowFlatArr(true);
+                            dataBlock.setAllRight(true);
+                            transferCenter.sendObjectToUser(dataBlock);
+                            wasPrinted = true;
+                        }
+                        else {
+                            dataBlock.setFlats(flats);
+                            dataBlock.setUserNeedToShowFlatArr(true);
+                            dataBlock.setAllRight(false);
+                            transferCenter.sendObjectToUser(dataBlock);
+                            transferCenter.receiveObjectFromUser();
+                            wasPrinted = true;
+                        }
                     }
                 }
             }
             if(!wasPrinted){
-                System.out.println("Нет ни одного подходящего элемента в коллекции!");
+                if(command.getCreator().equals(Creator.USER)){
+                    dataBlock.setPhrase("Нет ни одного подходящего элемента в коллекции!");
+                    dataBlock.setAllRight(true);
+                    transferCenter.sendObjectToUser(dataBlock);
+                }
+                else {
+                    dataBlock.setPhrase("Нет ни одного подходящего элемента в коллекции!");
+                    dataBlock.setAllRight(false);
+                    transferCenter.sendObjectToUser(dataBlock);
+                    transferCenter.receiveObjectFromUser();
+                }
+//                System.out.println("Нет ни одного подходящего элемента в коллекции!");
             }
         }
         else {
-            System.out.println("В коллекции нет элементов для сравнения!");
+//            System.out.println("В коллекции нет элементов для сравнения!");
+            if(command.getCreator().equals(Creator.USER)){
+                dataBlock.setPhrase("В коллекции нет элементов для сравнения!");
+                dataBlock.setAllRight(true);
+                transferCenter.sendObjectToUser(dataBlock);
+            }
+            else {
+                dataBlock.setPhrase("В коллекции нет элементов для сравнения!");
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+                transferCenter.receiveObjectFromUser();
+            }
         }
 
     }
 
-    public Transport createTransport(CommandsData commandsData){
+    public Transport createTransport(CommandsData commandsData, TransferCenter transferCenter){
 //        Scanner input = new Scanner(System.in);
-        System.out.println("Транспортные маршруты,проходящие у дома, задаётся одной из следующих констант:");
+        String phrase = "";
+        phrase +="Транспортные маршруты,проходящие у дома, задаётся одной из следующих констант:\n";
         Transport[] transports = Transport.values();
         Transport transport;
         for (int i =0;i<transports.length;i++){
-            System.out.print(transports[i].name() + " ");
+            phrase +=transports[i].name() + " ";
         }
-        System.out.println("Нужно выбрать одну из них");
-        String str = informationGetter(commandsData);
-        if(str.length() == 0){
-            System.out.println("Это поле не может быть пустым!");
-            transport = createTransport(commandsData);
+        phrase +="Нужно выбрать одну из них";
+        DataBlock dataBlock = new DataBlock();
+        dataBlock.setPhrase(phrase);
+        dataBlock.setServerNeedStringParameter(true);
+        dataBlock.setAllRight(false);
+        transferCenter.sendObjectToUser(dataBlock);
+        dataBlock = (DataBlock) transferCenter.receiveObjectFromUser();
+//        String str = informationGetter(commandsData);
+        if(dataBlock.getParameter().length() == 0){
+            dataBlock = new DataBlock();
+            dataBlock.setPhrase("Это поле не может быть пустым!\n");
+//            System.out.println("Это поле не может быть пустым!");
+            dataBlock.setAllRight(false);
+            transferCenter.sendObjectToUser(dataBlock);
+            transferCenter.receiveObjectFromUser();
+            transport = createTransport(commandsData, transferCenter);
         }
         else {
             try {
-                Transport transport1 = Transport.valueOf(str);
-                transport = transport1;
+                transport = Transport.valueOf(dataBlock.getParameter());
             } catch (Exception e) {
-                System.out.println("Некорректный ввод данных!\nВведите поле занова");
-                transport = createTransport(commandsData);
+                dataBlock = new DataBlock();
+                dataBlock.setPhrase("Некорректный ввод данных!\nВведите поле занова\n");
+                dataBlock.setAllRight(false);
+                transferCenter.sendObjectToUser(dataBlock);
+                transferCenter.receiveObjectFromUser();
+                transport = createTransport(commandsData, transferCenter);
             }
         }
         return transport;

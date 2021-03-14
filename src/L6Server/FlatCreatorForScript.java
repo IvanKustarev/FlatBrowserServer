@@ -1,36 +1,36 @@
-package CommonClasses;
+package L6Server;
 
-
-
+import CommonClasses.CommandsData;
+import CommonClasses.*;
 import CommonClasses.ApartmentDescription.*;
 
 import java.io.BufferedReader;
+import java.util.Date;
 import java.util.Scanner;
 
-public class FlatCreator {
-
+public class FlatCreatorForScript {
+    Creator creator;
     BufferedReader bufferedReader;
-//    CommonClasses.CommandsData commandsData;
+    CommandsData commandsData;
 
-    public FlatCreator(){
-//        this.bufferedReader = commandsData.getBufferedReader();
-//        this.commandsData = commandsData;
+    public FlatCreatorForScript(CommandsData commandsData){
+        this.creator = commandsData.getCreator();
+        this.bufferedReader = commandsData.getBufferedReader();
+        this.commandsData = commandsData;
     }
 
     public String informationGetter(){
-        Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine();
-//        if(creator.equals(Creator.USER)){
-//            return (new Scanner(System.in).nextLine());
-//        }
-//        else {
-//            try {
-//                return bufferedReader.readLine();
-//            } catch (Exception e){
-//                System.out.println("Проблема с чтением файла в классе CommonClasses.FlatCreator!");
-//            }
-//            return null;
-//        }
+        if(creator.equals(Creator.USER)){
+            return (new Scanner(System.in).nextLine());
+        }
+        else {
+            try {
+                return bufferedReader.readLine();
+            } catch (Exception e){
+                System.out.println("Проблема с чтением файла в классе FlatCreator!");
+            }
+            return null;
+        }
     }
 
     public String createName(){
@@ -43,7 +43,7 @@ public class FlatCreator {
         }
         if(name == null){
             System.out.println("У квартиры обязательно должно быть имя!");
-            name = (new FlatCreator()).createName();
+            name = (new FlatCreatorForScript(commandsData)).createName();
         }
         boolean empty = true;
         for (int i =0;i<name.length();i++){
@@ -53,7 +53,7 @@ public class FlatCreator {
         }
         if(empty){
             System.out.println("У квартиры обязательно должно быть имя!");
-            name = (new FlatCreator()).createName();
+            name = (new FlatCreatorForScript(commandsData)).createName();
         }
         return name;
     }
@@ -73,11 +73,11 @@ public class FlatCreator {
             x = Double.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            x = (new FlatCreator()).createXcoordinate();
+            x = (new FlatCreatorForScript(commandsData)).createXcoordinate();
         }
         if(x <= -587){
             System.out.println("Значение поля должно быть больше -587!");
-            x = (new FlatCreator()).createXcoordinate();
+            x = (new FlatCreatorForScript(commandsData)).createXcoordinate();
         }
         return x;
     }
@@ -90,11 +90,11 @@ public class FlatCreator {
             y = Integer.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            y = (new FlatCreator()).createYcoordinate();
+            y = (new FlatCreatorForScript(commandsData)).createYcoordinate();
         }
         if(y > 77){
             System.out.println("Максимальное значение поля: 77!");
-            y = (new FlatCreator()).createYcoordinate();
+            y = (new FlatCreatorForScript(commandsData)).createYcoordinate();
         }
         return y;
     }
@@ -107,11 +107,11 @@ public class FlatCreator {
             area = Long.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            area = (new FlatCreator()).createArea();
+            area = (new FlatCreatorForScript(commandsData)).createArea();
         }
         if(area <= 0){
             System.out.println("Значение поля должно быть больше 0!");
-            area = (new FlatCreator()).createArea();
+            area = (new FlatCreatorForScript(commandsData)).createArea();
         }
         return area;
     }
@@ -124,11 +124,11 @@ public class FlatCreator {
             numberOfRooms = Long.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            numberOfRooms = (new FlatCreator()).createNumberOfRooms();
+            numberOfRooms = (new FlatCreatorForScript(commandsData)).createNumberOfRooms();
         }
         if((numberOfRooms <= 0) | (numberOfRooms == null)){
             System.out.println("Значение поля должно быть больше 0!");
-            numberOfRooms = (new FlatCreator()).createNumberOfRooms();
+            numberOfRooms = (new FlatCreatorForScript(commandsData)).createNumberOfRooms();
         }
         return numberOfRooms;
     }
@@ -146,16 +146,16 @@ public class FlatCreator {
             furnish = Furnish.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            furnish = (new FlatCreator()).createFurnish();
+            furnish = (new FlatCreatorForScript(commandsData)).createFurnish();
         }
         return furnish;
     }
 
-    public CommonClasses.ApartmentDescription.View createView(){
+    public View createView(){
 //        Scanner input = new Scanner(System.in);
         System.out.println("Вид из квартиры задаётся одной из следующих констант:");
-        CommonClasses.ApartmentDescription.View[] views = CommonClasses.ApartmentDescription.View.values();
-        CommonClasses.ApartmentDescription.View view;
+        View[] views = View.values();
+        View view;
         for (int i =0;i<views.length;i++){
             System.out.print(views[i].name() + " ");
         }
@@ -167,10 +167,10 @@ public class FlatCreator {
         }
         else {
             try {
-                view = CommonClasses.ApartmentDescription.View.valueOf(str);
+                view = View.valueOf(str);
             } catch (Exception e) {
                 System.out.println("Некорректный ввод данных!\nВведите поле занова");
-                view = (new FlatCreator()).createView();
+                view = (new FlatCreatorForScript(commandsData)).createView();
             }
         }
         return view;
@@ -195,7 +195,7 @@ public class FlatCreator {
                 transport = Transport.valueOf(str);
             } catch (Exception e) {
                 System.out.println("Некорректный ввод данных!\nВведите поле занова");
-                transport = (new FlatCreator()).createTransport();
+                transport = (new FlatCreatorForScript(commandsData)).createTransport();
             }
         }
         return transport;
@@ -221,7 +221,7 @@ public class FlatCreator {
             }
             else {
                 System.out.println("Некорректный ввод данных!\nВведите поле занова");
-                house = (new FlatCreator()).createHouse();
+                house = (new FlatCreatorForScript(commandsData)).createHouse();
             }
         }
         return house;
@@ -234,7 +234,7 @@ public class FlatCreator {
         houseName = informationGetter();
         if(houseName.length() == 0){
             System.out.println("Это поле обязательно для заполнения!");
-            houseName = (new FlatCreator()).createHouseName();
+            houseName = (new FlatCreatorForScript(commandsData)).createHouseName();
         }
         return houseName;
     }
@@ -247,11 +247,11 @@ public class FlatCreator {
             houseYear = Long.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            houseYear = (new FlatCreator()).createHouseYear();
+            houseYear = (new FlatCreatorForScript(commandsData)).createHouseYear();
         }
         if(houseYear <= 0){
             System.out.println("Значение поля должно быть больше 0!");
-            houseYear = (new FlatCreator()).createHouseYear();
+            houseYear = (new FlatCreatorForScript(commandsData)).createHouseYear();
         }
         return houseYear;
     }
@@ -264,11 +264,11 @@ public class FlatCreator {
             houseNumberOfFloors = Long.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            houseNumberOfFloors = (new FlatCreator()).createHouseYear();
+            houseNumberOfFloors = (new FlatCreatorForScript(commandsData)).createHouseYear();
         }
         if((houseNumberOfFloors <= 0) | (houseNumberOfFloors >86)){
             System.out.println("Значение поля должно быть больше 0 и меньше 87!");
-            houseNumberOfFloors = (new FlatCreator()).createHouseYear();
+            houseNumberOfFloors = (new FlatCreatorForScript(commandsData)).createHouseYear();
         }
         return houseNumberOfFloors;
     }
@@ -281,11 +281,11 @@ public class FlatCreator {
             houseNumberOfFlatsOnFloor = Integer.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            houseNumberOfFlatsOnFloor = (new FlatCreator()).createHouseNumberOfFlatsOnFloor();
+            houseNumberOfFlatsOnFloor = (new FlatCreatorForScript(commandsData)).createHouseNumberOfFlatsOnFloor();
         }
         if(houseNumberOfFlatsOnFloor <= 0){
             System.out.println("Значение поля должно быть больше 0!");
-            houseNumberOfFlatsOnFloor = (new FlatCreator()).createHouseNumberOfFlatsOnFloor();
+            houseNumberOfFlatsOnFloor = (new FlatCreatorForScript(commandsData)).createHouseNumberOfFlatsOnFloor();
         }
         return houseNumberOfFlatsOnFloor;
     }
@@ -298,12 +298,29 @@ public class FlatCreator {
             houseNumberOfLifts = Integer.valueOf(informationGetter());
         }catch (Exception e){
             System.out.println("Некорректный ввод данных!\nВведите поле занова");
-            houseNumberOfLifts = (new FlatCreator()).createHouseNumberOfLifts();
+            houseNumberOfLifts = (new FlatCreatorForScript(commandsData)).createHouseNumberOfLifts();
         }
         if(houseNumberOfLifts <= 0){
             System.out.println("Значение поля должно быть больше 0!");
-            houseNumberOfLifts = (new FlatCreator()).createHouseNumberOfLifts();
+            houseNumberOfLifts = (new FlatCreatorForScript(commandsData)).createHouseNumberOfLifts();
         }
         return houseNumberOfLifts;
+    }
+
+    public static Flat createFlat(CommandsData commandsData, long id){
+        Flat flat = new Flat();
+        FlatCreatorForScript flatCreator = new FlatCreatorForScript(commandsData);
+
+        flat.setId(id);
+        flat.setName(flatCreator.createName());
+        flat.setCoordinates(flatCreator.createCoordinates());
+        flat.setCreationDate(new Date());
+        flat.setArea(flatCreator.createArea());
+        flat.setNumberOfRooms(flatCreator.createNumberOfRooms());
+        flat.setFurnish(flatCreator.createFurnish());
+        flat.setView(flatCreator.createView());
+        flat.setTransport(flatCreator.createTransport());
+        flat.setHouse(flatCreator.createHouse());
+        return flat;
     }
 }

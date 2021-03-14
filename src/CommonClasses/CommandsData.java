@@ -52,7 +52,7 @@ public enum CommandsData implements Serializable {
         }
 
         {
-            comandWithElementParameter = true;
+            comandWithElementParameter = false;
         }
     },
     REMOVEBYID{
@@ -161,7 +161,7 @@ public enum CommandsData implements Serializable {
     protected Boolean comandWithElementParameter = null;
 //    protected Boolean neededCollectionCommand = null;
 
-    public Boolean isComandWithElementParameter() {
+    public Boolean isCommandWithElementParameter() {
         return comandWithElementParameter;
     }
 
@@ -187,6 +187,8 @@ public enum CommandsData implements Serializable {
     //L6User.User or Script
     private Creator creator;
 
+    static final long serialVersionUID = 5;
+
     public void setCreator(Creator creator){
         this.creator = creator;
     }
@@ -195,7 +197,7 @@ public enum CommandsData implements Serializable {
         return creator;
     }
 
-    private String parameter = "";
+    public String parameter = "";
 
     public void setParameter(String parameter) {
         this.parameter = parameter;
