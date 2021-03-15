@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.channels.DatagramChannel;
 import java.util.Stack;
 
 /**Класс, который создаётся в user и script и управляет работой команд*/
@@ -73,64 +74,64 @@ public class CommandCenter {
         this.updateIdCommand = updateId;
     }
 
-    public void add(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        addCommand.execute(command, transferCenter, commandsData);
+    public void add(DatagramChannel datagramChannel, CommandsData commandsData){
+        addCommand.execute(datagramChannel, commandsData);
     }
 
-    public void addIfMin(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        addIfMinCommand.execute(command, transferCenter, commandsData);
+    public void addIfMin(DatagramChannel datagramChannel, CommandsData commandsData){
+        addIfMinCommand.execute(datagramChannel, commandsData);
     }
 
-    public void clear(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        clearCommand.execute(command, transferCenter, commandsData);
+    public void clear(DatagramChannel datagramChannel, CommandsData commandsData){
+        clearCommand.execute(datagramChannel, commandsData);
     }
 
-    public void filterLessThanTransport(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        filterLessThanTransportCommand.execute(command, transferCenter, commandsData);
+    public void filterLessThanTransport(DatagramChannel datagramChannel, CommandsData commandsData){
+        filterLessThanTransportCommand.execute(datagramChannel, commandsData);
     }
 
-    public void executeScript(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        executeScriptCommand.execute(command, transferCenter, commandsData);
+    public void executeScript(DatagramChannel datagramChannel, CommandsData commandsData){
+        executeScriptCommand.execute(datagramChannel, commandsData);
     }
 
-    public void help(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        helpCommand.execute(command, transferCenter, commandsData);
+    public void help(DatagramChannel datagramChannel, CommandsData commandsData){
+        helpCommand.execute(datagramChannel, commandsData);
     }
 
-    public void info(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        infoCommand.execute(command, transferCenter, commandsData);
+    public void info(DatagramChannel datagramChannel, CommandsData commandsData){
+        infoCommand.execute(datagramChannel, commandsData);
     }
 
-    public void printFieldAscendingNumberOfRooms(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        printFieldAscendingNumberOfRoomsCommand.execute(command, transferCenter, commandsData);
+    public void printFieldAscendingNumberOfRooms(DatagramChannel datagramChannel, CommandsData commandsData){
+        printFieldAscendingNumberOfRoomsCommand.execute(datagramChannel, commandsData);
     }
 
-    public void removeById(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        removeByIdCommand.execute(command, transferCenter, commandsData);
+    public void removeById(DatagramChannel datagramChannel, CommandsData commandsData){
+        removeByIdCommand.execute(datagramChannel, commandsData);
     }
 
-    public void removeHead(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        removeHeadCommand.execute(command, transferCenter, commandsData);
+    public void removeHead(DatagramChannel datagramChannel, CommandsData commandsData){
+        removeHeadCommand.execute(datagramChannel, commandsData);
     }
 
-    public void removeLower(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        removeLowerCommand.execute(command, transferCenter, commandsData);
+    public void removeLower(DatagramChannel datagramChannel, CommandsData commandsData){
+        removeLowerCommand.execute(datagramChannel, commandsData);
     }
 
 //    public void save(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
 //        saveCommand.execute(command, transferCenter, commandsData);
 //    }
 
-    public void show(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        showCommand.execute(command, transferCenter, commandsData);
+    public void show(DatagramChannel datagramChannel, CommandsData commandsData){
+        showCommand.execute(datagramChannel, commandsData);
     }
 
-    public void sumOfNumberOfRooms(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        sumOfNumberOfRoomsCommand.execute(command, transferCenter, commandsData);
+    public void sumOfNumberOfRooms(DatagramChannel datagramChannel, CommandsData commandsData){
+        sumOfNumberOfRoomsCommand.execute(datagramChannel, commandsData);
     }
 
-    public void update(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-        updateIdCommand.execute(command, transferCenter, commandsData);
+    public void update(DatagramChannel datagramChannel, CommandsData commandsData){
+        updateIdCommand.execute(datagramChannel, commandsData);
     }
 
 
@@ -216,24 +217,24 @@ public class CommandCenter {
 //        startCommand(userCommand);
 //    }
 
-    public void processingAndStartUserCommand(CommandsData commandsData, TransferCenter transferCenter){
-        CommandsData userCommand = packingCommandInCommandsObject(commandsData.toString() + " " + commandsData.getParameter(), isCommandWithParameter(commandsData.toString() + commandsData.getParameter()), Creator.USER);
-        if(userCommand.equals(CommandsData.EXECUTESCRIPT)){
+    public void processingAndStartUserCommand(CommandsData commandsData, DatagramChannel datagramChannel){
+//        CommandsData userCommand = packingCommandInCommandsObject(commandsData.toString() + " " + commandsData.getParameter(), isCommandWithParameter(commandsData.toString() + commandsData.getParameter()), Creator.USER);
+        if(commandsData.equals(CommandsData.EXECUTESCRIPT)){
             //дополнительные параметры для этой команды
             try {
                 //создаем буффер для чтения файла со скриптом
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(userCommand.getParameter())));
-                userCommand.setBufferedReader(bufferedReader);
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(commandsData.getParameter())));
+                commandsData.setBufferedReader(bufferedReader);
 
                 //создаётся стек для открытых файлов (ловить рекурсию)
                 Stack<String> openingFiles = new Stack<>();
-                userCommand.setOpeningFiles(openingFiles);
-                userCommand.addOpeningFile(userCommand.getParameter());
+                commandsData.setOpeningFiles(openingFiles);
+                commandsData.addOpeningFile(commandsData.getParameter());
             } catch (FileNotFoundException e) {
                 System.out.println("Проблемы с загрузкой файла со скриптом!");
             }
         }
-        startCommand(userCommand, transferCenter, commandsData);
+        startCommand(/*userCommand,*/ datagramChannel, commandsData);
     }
 
     /**запуск команды осуществляемый user-ом*/
@@ -274,19 +275,19 @@ public class CommandCenter {
     }
 
     /**получает уже запакованную со всеми параметрами команду и запускает её*/
-    public void startCommand(CommandsData commandObject, TransferCenter transferCenter, CommandsData commandsData){
-        String commandName = gettingNormalFormatOfName(commandObject.toString());
+    public void startCommand(/*CommandsData commandObject, TransferCenter transferCenter,*/DatagramChannel datagramChannel, CommandsData commandsData){
+        String commandName = gettingNormalFormatOfName(commandsData.toString());
 //        System.out.println(commandName);
 
         Method[] methods = getClass().getDeclaredMethods();
         for (Method method : methods){
             if(method.getName().equals(commandName)){
                 if(commandName.equals("executeScript")){
-                    executeScript(commandObject, transferCenter, commandsData);
+                    executeScript(/*commandObject, transferCenter,*/datagramChannel, commandsData);
                 }
                 else {
                     try {
-                        method.invoke(this, commandObject, transferCenter, commandsData);
+                        method.invoke(this, /*commandObject, transferCenter,*/datagramChannel, commandsData);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     } catch (InvocationTargetException e) {

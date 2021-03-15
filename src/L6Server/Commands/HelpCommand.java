@@ -5,6 +5,8 @@ import CommonClasses.DataBlock;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class HelpCommand implements Command {
     @Override
     public String toString(){
@@ -12,7 +14,7 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData)
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData)
     {
         DataBlock dataBlock = new DataBlock();
         String phrase = "";

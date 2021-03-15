@@ -8,6 +8,8 @@ import L6Server.ExecuteScriptCommandRealization;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class ExecuteScriptCommand{
 
     FlatCollection flatCollection;
@@ -25,7 +27,7 @@ public class ExecuteScriptCommand{
 
 
 
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        (new ExecuteScriptCommandRealization()).startScript(command, flatCollection, fileAddress, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, commandsData);
     }
 }

@@ -4,6 +4,8 @@ import CommonClasses.CommandsData;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class RemoveLowerCommand implements Command{
 
     FlatCollection flatCollection;
@@ -17,7 +19,7 @@ public class RemoveLowerCommand implements Command{
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        flatCollection.removeLower(command, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        flatCollection.removeLower(datagramChannel, commandsData);
     }
 }

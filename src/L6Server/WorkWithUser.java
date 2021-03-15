@@ -18,7 +18,7 @@ public class WorkWithUser {
 
     FlatCollection flatCollection;
     String fileAddress;
-    TransferCenter transferCenter;
+//    TransferCenter transferCenter;
 //    CommandCenter commandCenter = new CommandCenter(fileAddress, flatCollection);
 
 
@@ -28,9 +28,9 @@ public class WorkWithUser {
 //        transferCenter = new TransferCenter();
     }
 
-    public void setTransferCenter(TransferCenter transferCenter) {
-        this.transferCenter = transferCenter;
-    }
+//    public void setTransferCenter(TransferCenter transferCenter) {
+//        this.transferCenter = transferCenter;
+//    }
 
     //    public WorkWithUser(FlatCollection flatCollection, String fileAddress/*, TransferCenter transferCenter*/) {
 //        this.flatCollection = flatCollection;
@@ -45,15 +45,20 @@ public class WorkWithUser {
                 new RemoveByIdCommand(flatCollection), new RemoveHeadCommand(flatCollection), new RemoveLowerCommand(flatCollection), /*new SaveCommand(flatCollection, fileAddress),*/
                 new ShowCommand(flatCollection), new SumOfNumberOfRoomsCommand(flatCollection), new UpdateIdCommand(flatCollection));
 
-        ServerCommands serverCommands = new ServerCommands(flatCollection, fileAddress);
-        serverCommands.start();
+//        ServerCommands serverCommands = new ServerCommands(flatCollection, fileAddress);
+//        serverCommands.start();
 
-        while (!serverCommands.exit) {
+//        while (!serverCommands.exit) {
 
-
-
-
+        //тк операция выполняется только один раз, то нужды в циклах нет
+        if (commandsData.isCommandWithElementParameter()) {
+            commandsData.setFlat(createNullFieldsOfFlat(commandsData.getFlat()));
         }
+
+        commandsData.setCreator(Creator.USER);
+        commandCenter.processingAndStartUserCommand(commandsData, datagramChannel);
+
+
 //            CommandsData commandsData = null;
 //            Object object = null;
 //            try {
@@ -84,7 +89,7 @@ public class WorkWithUser {
 //            commandsData.setCreator(Creator.USER);
 //            commandCenter.processingAndStartUserCommand(commandsData, transferCenter);
 //        }
-        flatCollection.save(flatCollection, fileAddress);
+//        flatCollection.save(flatCollection, fileAddress);
     }
 
     /**Заполняет незаполненные User-ом поля в Flat*/

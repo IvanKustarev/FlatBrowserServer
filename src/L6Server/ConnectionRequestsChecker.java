@@ -32,13 +32,13 @@ public class ConnectionRequestsChecker extends Thread{
                 System.out.println("Problem with receive!");
                 e.printStackTrace();
             }
-            FirstTimeConnectedData firstTimeConnectedData = (FirstTimeConnectedData) TransferCenter.deSerializeObject(byteBuffer.array());
+            FirstTimeConnectedData firstTimeConnectedData = (FirstTimeConnectedData) ObjectProcessing.deSerializeObject(byteBuffer.array());
 
             SocketAddress socketAddress = null;
             try {
                 socketAddress = firstTimeConnectedData.getDatagramChannel().getLocalAddress();
                 firstTimeConnectedData.setDatagramChannel(TransferCenter.createNewChannelWithIP());
-                byteBuffer = ByteBuffer.wrap(TransferCenter.serializeObject(firstTimeConnectedData));
+                byteBuffer = ByteBuffer.wrap(ObjectProcessing.serializeObject(firstTimeConnectedData));
                 datagramChannel.send(byteBuffer, socketAddress);
                 datagramChannel.register(selector, SelectionKey.OP_READ);
             } catch (IOException e) {

@@ -26,7 +26,7 @@ public class TransferCenter {
 
     public TransferCenter(WorkWithUser workWithUser){
         this.workWithUser = workWithUser;
-        this.workWithUser.setTransferCenter(this);
+//        this.workWithUser.setTransferCenter(this);
 
         createNewChannelWithoutIP();
         writeInformationAboutServer();
@@ -102,12 +102,13 @@ public class TransferCenter {
                 iterator.remove();
 
                 Object obj = null;
+                DatagramChannel selectedDatagramChannel = null;
                 try {
 //                    selectionKey.channel()
-                    DatagramChannel selectedDatagramChannel = ((DatagramChannel)selectionKey.channel());/*.receive(ByteBuffer.wrap(new byte[1]));*/
+                    selectedDatagramChannel = ((DatagramChannel)selectionKey.channel());/*.receive(ByteBuffer.wrap(new byte[1]));*/
                     ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[1]);
                     selectedDatagramChannel.receive(byteBuffer);
-                    obj = TransferCenter.serializeObject(byteBuffer.array());
+                    obj = ObjectProcessing.serializeObject(byteBuffer.array());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -115,7 +116,7 @@ public class TransferCenter {
                 CommandsData commandsData = null;
                 try {
                     commandsData = (CommandsData) obj;
-                    System.out.println("ttt");
+                    workWithUser.startWorkWithUser(selectedDatagramChannel, commandsData);
                 }catch (Exception e){}
             }
         }
@@ -174,26 +175,26 @@ public class TransferCenter {
 //        }
 //    }
 //
-    public static <T> byte[] serializeObject(T obj){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = null;
-        try {
-            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        } catch (IOException e) {
-            System.out.println("Проблема с созданием потока для серилизации объектов!");
-        }
-        byte[] serObj = null;
-
-        try {
-            objectOutputStream.writeObject(obj);
-            serObj = byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            System.out.println("Проблема с серелизацией объекта для отправки на сервер!");
-            e.printStackTrace();
-        }
-
-        return serObj;
-    }
+//    public static <T> byte[] serializeObject(T obj){
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        ObjectOutputStream objectOutputStream = null;
+//        try {
+//            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+//        } catch (IOException e) {
+//            System.out.println("Проблема с созданием потока для серилизации объектов!");
+//        }
+//        byte[] serObj = null;
+//
+//        try {
+//            objectOutputStream.writeObject(obj);
+//            serObj = byteArrayOutputStream.toByteArray();
+//        } catch (IOException e) {
+//            System.out.println("Проблема с серелизацией объекта для отправки на сервер!");
+//            e.printStackTrace();
+//        }
+//
+//        return serObj;
+//    }
 //
 //    private int createSocketAddressForReceive(){
 //        Random random = new Random();
@@ -376,28 +377,28 @@ public class TransferCenter {
 //        return deSerialize(objectByteArr);
 //    }
 //
-    public static Object deSerializeObject(byte[] objectByteArr){
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(objectByteArr);
-
-        ObjectInputStream objectInputStream = null;
-
-        try {
-            objectInputStream = new ObjectInputStream(inputStream);
-        } catch (IOException e) {
-            System.out.println("Проблема с созданием ObjectInputStream!");
-            e.printStackTrace();
-        }
-
-        Object object = null;
-        try {
-            object = objectInputStream.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return object;
-    }
+//    public static Object deSerializeObject(byte[] objectByteArr){
+//        ByteArrayInputStream inputStream = new ByteArrayInputStream(objectByteArr);
+//
+//        ObjectInputStream objectInputStream = null;
+//
+//        try {
+//            objectInputStream = new ObjectInputStream(inputStream);
+//        } catch (IOException e) {
+//            System.out.println("Проблема с созданием ObjectInputStream!");
+//            e.printStackTrace();
+//        }
+//
+//        Object object = null;
+//        try {
+//            object = objectInputStream.readObject();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        return object;
+//    }
 //
 //    /**ждёт от юзера объект, в параметре которого будет размер следующего объекта и возвращает этот размер*/
 //    private int receiveObjectArrSize(){

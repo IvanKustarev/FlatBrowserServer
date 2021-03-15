@@ -5,6 +5,8 @@ import CommonClasses.CommandsData;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class FilterLessThanTransportCommand implements Command{
 
     FlatCollection flatCollection;
@@ -18,7 +20,7 @@ public class FilterLessThanTransportCommand implements Command{
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        flatCollection.filterLessThanTransport(command, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        flatCollection.filterLessThanTransport(datagramChannel, commandsData);
     }
 }
