@@ -2,7 +2,7 @@ package L6Server;//import L5.L6Server.InputeOutputeWork.LoadingCollectionFromFil
 import CommonClasses.AbstractDataBlock;
 import CommonClasses.CommandsData;
 //import CommonClasses.ConnectionSupport.ConnectionSupporter;
-import CommonClasses.DataBlock;
+//import CommonClasses.DataBlock;
 import CommonClasses.Flat;
 import L6Server.InputeOutputeWork.*;
 //import L6User.L6User.AnswerToServer;
@@ -39,8 +39,15 @@ public class Main {
 //        WorkWithUser workWithUser = new WorkWithUser(flatCollection, fileAddress);
 //        workWithUser.startWorkWithUser();
 
-        TransferCenter transferCenter = new TransferCenter();
-        transferCenter.requestsProcessing();
+//        TransferCenter transferCenter = new TransferCenter();
+//        transferCenter.requestsProcessing();
+
+        CommandsData commandsData = CommandsData.ADD;
+        commandsData.setPhrase("true");
+        byte [] bytes = ObjectProcessing.serializeObject(commandsData);
+        Object obj = ObjectProcessing.deSerializeObject(bytes);
+        CommandsData commandsData1 = (CommandsData) obj;
+        System.out.println(commandsData1.getPhrase());
     }
 
     /**Загружает данные из файла в памяти в объект класса File. Проверяет на наличие ошибок доступа и прав к файлу в памяти*/

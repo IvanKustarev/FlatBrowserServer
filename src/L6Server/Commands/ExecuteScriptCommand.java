@@ -4,7 +4,7 @@ package L6Server.Commands;
 //import L5.FlatCollection;
 
 import CommonClasses.CommandsData;
-import L6Server.ExecuteScriptCommandRealization;
+//import L6Server.ExecuteScriptCommandRealization;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
@@ -28,6 +28,6 @@ public class ExecuteScriptCommand{
 
 
     public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
-        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, commandsData);
+//        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, commandsData);
     }
 }

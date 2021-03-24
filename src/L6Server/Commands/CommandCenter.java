@@ -3,7 +3,7 @@ package L6Server.Commands;
 
 import CommonClasses.CommandsData;
 import CommonClasses.Creator;
-import CommonClasses.DataBlock;
+//import CommonClasses.DataBlock;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
@@ -237,42 +237,42 @@ public class CommandCenter {
         startCommand(/*userCommand,*/ datagramChannel, commandsData);
     }
 
-    /**запуск команды осуществляемый user-ом*/
-    public void processingAndStartScriptCommand(String command, CommandsData commandsData, BufferedReader bufferedReader, TransferCenter transferCenter, CommandsData otherCommandsData){
-        CommandsData scriptCommand = packingCommandInCommandsObject(command, isCommandWithParameter(command), Creator.SCRIPT);
-
-        boolean recursWasStarted = false;
-        scriptCommand.setBufferedReader(bufferedReader);
-        if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
-            //дополнительные параметры для этой команды
-
-            String[] nameOfOpenedFiles = new String[commandsData.getOpeningFiles().toArray().length];
-            for(int i =0; i < commandsData.getOpeningFiles().toArray().length; i++){
-                nameOfOpenedFiles[i] = (String) (commandsData.getOpeningFiles().toArray())[i];
-            }
-
-            for (String nameOfOpenedFile : nameOfOpenedFiles){
-                if(nameOfOpenedFile.equals(commandsData.getParameter())){
-                    recursWasStarted = true;
-                }
-            }
-        }
-
-        if(recursWasStarted){
-            DataBlock dataBlock = new DataBlock();
-            dataBlock.setAllRight(true);
-            dataBlock.setPhrase("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
-            transferCenter.sendObjectToUser(dataBlock);
-
-//            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
-        }
-        else {
-            if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
-                scriptCommand.addOpeningFile(scriptCommand.getParameter());
-            }
-            startCommand(scriptCommand, transferCenter, otherCommandsData);
-        }
-    }
+//    /**запуск команды осуществляемый user-ом*/
+//    public void processingAndStartScriptCommand(String command, CommandsData commandsData, BufferedReader bufferedReader, TransferCenter transferCenter, CommandsData otherCommandsData){
+//        CommandsData scriptCommand = packingCommandInCommandsObject(command, isCommandWithParameter(command), Creator.SCRIPT);
+//
+//        boolean recursWasStarted = false;
+//        scriptCommand.setBufferedReader(bufferedReader);
+//        if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
+//            //дополнительные параметры для этой команды
+//
+//            String[] nameOfOpenedFiles = new String[commandsData.getOpeningFiles().toArray().length];
+//            for(int i =0; i < commandsData.getOpeningFiles().toArray().length; i++){
+//                nameOfOpenedFiles[i] = (String) (commandsData.getOpeningFiles().toArray())[i];
+//            }
+//
+//            for (String nameOfOpenedFile : nameOfOpenedFiles){
+//                if(nameOfOpenedFile.equals(commandsData.getParameter())){
+//                    recursWasStarted = true;
+//                }
+//            }
+//        }
+//
+//        if(recursWasStarted){
+////            CommandsData dataBlock = new DataBlock();
+//            dataBlock.setAllRight(true);
+//            dataBlock.setPhrase("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
+//            transferCenter.sendObjectToUser(dataBlock);
+//
+////            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
+//        }
+//        else {
+//            if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
+//                scriptCommand.addOpeningFile(scriptCommand.getParameter());
+//            }
+//            startCommand(scriptCommand, transferCenter, otherCommandsData);
+//        }
+//    }
 
     /**получает уже запакованную со всеми параметрами команду и запускает её*/
     public void startCommand(/*CommandsData commandObject, TransferCenter transferCenter,*/DatagramChannel datagramChannel, CommandsData commandsData){

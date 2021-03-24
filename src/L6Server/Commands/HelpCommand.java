@@ -1,7 +1,7 @@
 package L6Server.Commands;
 
 import CommonClasses.CommandsData;
-import CommonClasses.DataBlock;
+//import CommonClasses.DataBlock;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
@@ -16,7 +16,8 @@ public class HelpCommand implements Command {
     @Override
     public void execute(DatagramChannel datagramChannel, CommandsData commandsData)
     {
-        DataBlock dataBlock = new DataBlock();
+//         dataBlock = new DataBlock();
+
         String phrase = "";
         phrase += (new HelpCommand().toString()) + "\n";
         phrase += (new InfoCommand(new FlatCollection()).toString()) + "\n";
@@ -36,8 +37,10 @@ public class HelpCommand implements Command {
         phrase += ((new FilterLessThanTransportCommand(new FlatCollection())).toString()) + "\n";
         phrase += ((new PrintFieldAscendingNumberOfRoomsCommand(new FlatCollection())).toString()) + "\n";
 
-        dataBlock.setPhrase(phrase);
-        dataBlock.setAllRight(true);
-        transferCenter.sendObjectToUser(dataBlock);
+        commandsData.setPhrase(phrase);
+        commandsData.setCommandEnded(true);
+        TransferCenter.sendObject(datagramChannel, commandsData);
+//        dataBlock.setAllRight(true);
+//        transferCenter.sendObjectToUser(dataBlock);
     }
 }

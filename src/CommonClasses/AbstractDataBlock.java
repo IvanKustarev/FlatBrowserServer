@@ -6,9 +6,9 @@ public abstract class AbstractDataBlock implements Serializable {
 
     static final long serialVersionUID = 0;
 
-    public boolean isServerNeedStringParameter;
-    public boolean isServerNeedElementParameter;
-    public boolean isUserNeedToShowFlatArr;
+    public boolean isServerNeedStringParameter = false;
+    public boolean isServerNeedElementParameter = false;
+    public boolean isUserNeedToShowFlatArr = false;
 
     public String phrase = null;
     public String parameter = null;

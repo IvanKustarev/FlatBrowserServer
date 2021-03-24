@@ -1,7 +1,7 @@
 package L6Server;
 
 import CommonClasses.CommandsData;
-import CommonClasses.ConnectionSupport.FirstTimeConnectedData;
+
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -33,7 +33,6 @@ public class ConnectionRequestsChecker extends Thread{
                 e.printStackTrace();
             }
             FirstTimeConnectedData firstTimeConnectedData = (FirstTimeConnectedData) ObjectProcessing.deSerializeObject(byteBuffer.array());
-
             SocketAddress socketAddress = null;
             try {
                 socketAddress = firstTimeConnectedData.getDatagramChannel().getLocalAddress();

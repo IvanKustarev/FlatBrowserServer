@@ -3,7 +3,7 @@ package L6Server;
 
 
 import CommonClasses.CommandsData;
-import CommonClasses.DataBlock;
+//import CommonClasses.DataBlock;
 
 import java.io.*;
 import java.net.*;
@@ -122,7 +122,15 @@ public class TransferCenter {
         }
     }
 
-
+    public  static void sendObject(DatagramChannel datagramChannel, CommandsData commandsData){
+        ByteBuffer byteBuffer = ByteBuffer.wrap(ObjectProcessing.serializeObject(commandsData));
+        try {
+            datagramChannel.send(byteBuffer, datagramChannel.socket().getRemoteSocketAddress());
+        } catch (IOException e) {
+            System.out.println("Can't send object to User!");
+            e.printStackTrace();
+        }
+    }
 
 
 
