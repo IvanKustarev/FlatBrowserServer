@@ -1,34 +1,30 @@
-package L6Server.ApartmentDescription;
+package CommonClasses.ApartmentDescription;
 
-public enum Transport implements Attractive {
-    FEW{
+import java.io.Serializable;
+
+public enum View implements Attractive , Serializable {
+    BAD{
         @Override
         public int levelAttractive() {
             return 1;
         }
     },
-    NONE {
-        @Override
-        public int levelAttractive() {
-            return 0;
-        }
-    },
-    LITTLE {
+    NORMAL {
         @Override
         public int levelAttractive() {
             return 2;
         }
     },
-    NORMAL {
+    GOOD {
         @Override
         public int levelAttractive() {
             return 3;
         }
     },
-    ENOUGH {
+    TERRIBLE {
         @Override
         public int levelAttractive() {
-            return 4;
+            return 0;
         }
     };
 }

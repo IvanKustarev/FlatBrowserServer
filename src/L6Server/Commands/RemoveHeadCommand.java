@@ -5,6 +5,8 @@ import CommonClasses.CommandsData;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class RemoveHeadCommand implements Command{
 
     FlatCollection flatCollection;
@@ -15,8 +17,8 @@ public class RemoveHeadCommand implements Command{
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        flatCollection.removeHead(command, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        flatCollection.removeHead(datagramChannel, commandsData);
     }
 
     @Override

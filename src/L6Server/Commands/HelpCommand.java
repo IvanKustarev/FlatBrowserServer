@@ -1,8 +1,11 @@
 package L6Server.Commands;
 
 import CommonClasses.CommandsData;
+//import CommonClasses.DataBlock;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
+
+import java.nio.channels.DatagramChannel;
 
 public class HelpCommand implements Command {
     @Override
@@ -11,24 +14,33 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData)
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData)
     {
-        System.out.println((new HelpCommand()).toString());
-        System.out.println((new InfoCommand(new FlatCollection())).toString());
-        System.out.println((new ShowCommand(new FlatCollection())).toString());
-        System.out.println((new AddCommand(new FlatCollection())).toString());
-        System.out.println((new UpdateIdCommand(new FlatCollection())).toString());
-        System.out.println((new RemoveByIdCommand(new FlatCollection())).toString());
-        System.out.println((new ClearCommand(new FlatCollection())).toString());
+//         dataBlock = new DataBlock();
+
+        String phrase = "";
+        phrase += (new HelpCommand().toString()) + "\n";
+        phrase += (new InfoCommand(new FlatCollection()).toString()) + "\n";
+        phrase += ((new ShowCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new AddCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new UpdateIdCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new RemoveByIdCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new ClearCommand(new FlatCollection())).toString()) + "\n";
 //        System.out.println((new SaveCommand(new FlatCollection(), "")).toString());
-//        System.out.println((new ExecuteScriptCommand(new FlatCollection(), "")).toString());
-        System.out.println((new ExitCommand()).toString());
-        System.out.println((new RemoveHeadCommand(new FlatCollection())).toString());
-        System.out.println((new AddIfMinCommand(new FlatCollection())).toString());
-        System.out.println((new RemoveLowerCommand(new FlatCollection())).toString());
-        System.out.println((new SumOfNumberOfRoomsCommand(new FlatCollection())
-        ).toString());
-        System.out.println((new FilterLessThanTransportCommand(new FlatCollection())).toString());
-        System.out.println((new PrintFieldAscendingNumberOfRoomsCommand(new FlatCollection())).toString());
+        phrase +=((new ExecuteScriptCommand(new FlatCollection(), "")).toString()) + "\n";
+        phrase += ((new ExitCommand()).toString()) + "\n";
+        phrase += ((new RemoveHeadCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new AddIfMinCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new RemoveLowerCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new SumOfNumberOfRoomsCommand(new FlatCollection())
+        ).toString()) + "\n";
+        phrase += ((new FilterLessThanTransportCommand(new FlatCollection())).toString()) + "\n";
+        phrase += ((new PrintFieldAscendingNumberOfRoomsCommand(new FlatCollection())).toString()) + "\n";
+
+        commandsData.setPhrase(phrase);
+        commandsData.setCommandEnded(true);
+        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+//        dataBlock.setAllRight(true);
+//        transferCenter.sendObjectToUser(dataBlock);
     }
 }

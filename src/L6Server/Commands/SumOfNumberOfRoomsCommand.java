@@ -4,6 +4,8 @@ import CommonClasses.CommandsData;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class SumOfNumberOfRoomsCommand implements Command{
 
     FlatCollection flatCollection;
@@ -18,7 +20,7 @@ public class SumOfNumberOfRoomsCommand implements Command{
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        flatCollection.sumOfNumberOfRooms(command, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        flatCollection.sumOfNumberOfRooms(datagramChannel, commandsData);
     }
 }

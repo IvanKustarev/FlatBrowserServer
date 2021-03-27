@@ -1,8 +1,11 @@
 package L6Server.Commands;
 
+//import CommonClasses.*;
 import CommonClasses.CommandsData;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
+
+import java.nio.channels.DatagramChannel;
 
 public class RemoveByIdCommand implements Command{
 
@@ -17,7 +20,7 @@ public class RemoveByIdCommand implements Command{
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        flatCollection.removeById(command, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        flatCollection.removeById(datagramChannel, commandsData);
     }
 }

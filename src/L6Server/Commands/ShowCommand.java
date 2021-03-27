@@ -5,6 +5,8 @@ import CommonClasses.CommandsData;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class ShowCommand implements Command {
     @Override
     public String toString(){
@@ -17,7 +19,7 @@ public class ShowCommand implements Command {
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        flatCollection.show(command, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        flatCollection.show(datagramChannel, commandsData);
     }
 }

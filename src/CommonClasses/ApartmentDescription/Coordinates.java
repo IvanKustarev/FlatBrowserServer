@@ -1,6 +1,8 @@
-package L6Server.ApartmentDescription;
+package CommonClasses.ApartmentDescription;
 
-public class Coordinates {
+import java.io.Serializable;
+
+public class Coordinates implements Serializable {
     private double x; //Значение поля должно быть больше -587
     private Integer y; //Максимальное значение поля: 77, Поле не может быть null
 

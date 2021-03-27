@@ -5,6 +5,8 @@ import CommonClasses.CommandsData;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.nio.channels.DatagramChannel;
+
 public class ClearCommand implements Command {
 
     FlatCollection flatCollection;
@@ -19,7 +21,7 @@ public class ClearCommand implements Command {
     }
 
     @Override
-    public void execute(CommandsData command, TransferCenter transferCenter, CommandsData commandsData) {
-        flatCollection.clear(command, transferCenter, commandsData);
+    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
+        flatCollection.clear(datagramChannel, commandsData);
     };
 }
