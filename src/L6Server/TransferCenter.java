@@ -3,6 +3,8 @@ package L6Server;
 
 
 import CommonClasses.CommandsData;
+import CommonClasses.DataBlock;
+import CommonClasses.Flat;
 //import CommonClasses.DataBlock;
 
 import java.io.*;
@@ -11,10 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class TransferCenter {
 
@@ -27,8 +26,13 @@ public class TransferCenter {
     public TransferCenter(WorkWithUser workWithUser){
         this.workWithUser = workWithUser;
 //        this.workWithUser.setTransferCenter(this);
-
-        createNewChannelWithoutIP();
+        System.out.println("Введите 0, если хотите автоматически создать сервер или 1, если хотите привязать его к определённому порту:");
+        if(Integer.valueOf(new Scanner(System.in).nextLine()).equals(1)){
+            System.out.println("Ведите порт:");
+            mainServerDatagramChannel = createNewChannelWithIP(Integer.valueOf(new Scanner(System.in).nextLine()));
+        }else {
+            mainServerDatagramChannel = createNewChannelWithIP();
+        }
         writeInformationAboutServer();
         try {
             selector = Selector.open();
@@ -41,28 +45,28 @@ public class TransferCenter {
         connectionRequestsChecker.start();
     }
 
-    public static DatagramChannel createNewChannelWithoutIP() {
-        Random random = new Random();
-        DatagramChannel datagramChannel = null;
-        try {
-            datagramChannel = DatagramChannel.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        int port = -1;
-
-        boolean workingPort = false;
-        while (!workingPort) {
-            port = random.nextInt(65535);
-
-            try {
-                datagramChannel.bind(new InetSocketAddress(port));
-                workingPort = true;
-            } catch (IOException e) { }
-        }
-        return datagramChannel;
-    }
+//    public static DatagramChannel createNewChannelWithoutIP() {
+//        Random random = new Random();
+//        DatagramChannel datagramChannel = null;
+//        try {
+//            datagramChannel = DatagramChannel.open();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        int port = -1;
+//
+//        boolean workingPort = false;
+//        while (!workingPort) {
+//            port = random.nextInt(65535);
+//
+//            try {
+//                datagramChannel.bind(new InetSocketAddress(port));
+//                workingPort = true;
+//            } catch (IOException e) { }
+//        }
+//        return datagramChannel;
+//    }
 
     public static DatagramChannel createNewChannelWithIP() {
         Random random = new Random();
@@ -87,6 +91,32 @@ public class TransferCenter {
         return datagramChannel;
     }
 
+    public static DatagramChannel createNewChannelWithIP(int port) {
+//        Random random = new Random();
+        DatagramChannel datagramChannel = null;
+        try {
+            datagramChannel = DatagramChannel.open();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        int port = -1;
+
+//        boolean workingPort = false;
+//        while (!workingPort) {
+//            port = random.nextInt(65535);
+
+            try {
+                datagramChannel.bind(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), port));
+//                workingPort = true;
+            } catch (IOException e) {
+                System.out.println("Некорректный или занятый port введите другой:");
+                datagramChannel = createNewChannelWithIP((new Scanner(System.in)).nextInt());
+            }
+//        }
+        return datagramChannel;
+    }
+
     public void writeInformationAboutServer() {
         System.out.println("IP сервера: " + mainServerDatagramChannel.socket().getLocalAddress().getHostAddress()+ "\nPort сервера: " + mainServerDatagramChannel.socket().getLocalPort() + "\n");
     }
@@ -94,8 +124,17 @@ public class TransferCenter {
     /**Processing requests from different users and started work with them*/
     public void requestsProcessing(){
         while (true){
+            try {
+                if(selector.selectNow() == 0){
+                    continue;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Set<SelectionKey> selectionKeys = selector.selectedKeys();
+//            System.out.println("SKS: " + selectionKeys.size());
             Iterator iterator = selectionKeys.iterator();
+
 
             while (iterator.hasNext()){
                 SelectionKey selectionKey = (SelectionKey) iterator.next();
@@ -106,26 +145,114 @@ public class TransferCenter {
                 try {
 //                    selectionKey.channel()
                     selectedDatagramChannel = ((DatagramChannel)selectionKey.channel());/*.receive(ByteBuffer.wrap(new byte[1]));*/
-                    ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[1]);
+                    ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[10000]);
                     selectedDatagramChannel.receive(byteBuffer);
-                    obj = ObjectProcessing.serializeObject(byteBuffer.array());
+
+//                    for (int i = 0; i<10;i++){
+//                        System.out.println(byteBuffer.array()[i]);
+//                    }
+//                    selectedDatagramChannel = DatagramChannel.open();
+//                    selectedDatagramChannel.connect(socketAddress);
+//                    for (int i = 0; i<byteBuffer.array().length; i++){
+//                        System.out.println(i + "   " +byteBuffer.array()[i]);
+//                    }
+                    obj = ObjectProcessing.deSerializeObject(byteBuffer.array());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 CommandsData commandsData = null;
-                try {
-                    commandsData = (CommandsData) obj;
-                    workWithUser.startWorkWithUser(selectedDatagramChannel, commandsData);
-                }catch (Exception e){}
+//                try {
+//                    commandsData = (CommandsData) obj;
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                    System.out.println(obj.getClass().getName());
+//                    System.out.println("Левый объект вместо CommandsData!");
+//                }
+
+//                ByteBuffer byteBuffer1 = null;
+//                try {
+//                    byteBuffer1 = ByteBuffer.wrap(new byte[10000]);
+//                    selectedDatagramChannel.receive(byteBuffer1);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                for (int i = 0; i<10;i++){
+//                    System.out.println(byteBuffer.array()[i]);
+//                }
+//                obj = ObjectProcessing.deSerializeObject(byteBuffer1.array());
+                DataBlock dataBlock = (DataBlock) obj;
+                commandsData = dataBlock.getCommandsData();
+                TransferCenter.copyFieldsFromTo(dataBlock, commandsData);
+
+//                System.out.println("startWorkWithUser");
+                workWithUser.startWorkWithUser(selectedDatagramChannel, commandsData);
+
             }
         }
     }
 
-    public  static void sendObject(DatagramChannel datagramChannel, CommandsData commandsData){
-        ByteBuffer byteBuffer = ByteBuffer.wrap(ObjectProcessing.serializeObject(commandsData));
+    private static void copyFieldsFromTo(CommandsData commandsData, DataBlock dataBlock){
+        dataBlock.setCommandWithElementParameter(commandsData.isCommandWithElementParameter());
+        dataBlock.setCreator(commandsData.getCreator());
+        dataBlock.setParameter(commandsData.getParameter());
+        dataBlock.setFlat(commandsData.getFlat());
+        dataBlock.setBufferedReader(commandsData.getBufferedReader());
+        dataBlock.setOpeningFiles(commandsData.getOpeningFiles());
+        dataBlock.setCommandEnded(commandsData.isCommandEnded());
+        dataBlock.setPhrase(commandsData.getPhrase());
+        dataBlock.setServerNeedStringParameter(commandsData.isServerNeedStringParameter);
+        dataBlock.setServerNeedElementParameter(commandsData.isServerNeedElementParameter);
+        dataBlock.setUserNeedToShowFlatArr(commandsData.isUserNeedToShowFlatArr);
+        dataBlock.setFlats(commandsData.getFlats());
+
+    }
+
+    private static void copyFieldsFromTo(DataBlock dataBlock, CommandsData commandsData){
+        commandsData.setCommandWithElementParameter(dataBlock.isCommandWithElementParameter());
+        commandsData.setCreator(dataBlock.getCreator());
+        commandsData.setParameter(dataBlock.getParameter());
+        commandsData.setFlat(dataBlock.getFlat());
+        commandsData.setBufferedReader(dataBlock.getBufferedReader());
+        commandsData.setOpeningFiles(dataBlock.getOpeningFiles());
+        commandsData.setCommandEnded(dataBlock.isCommandEnded());
+        commandsData.setPhrase(dataBlock.getPhrase());
+        commandsData.setServerNeedStringParameter(dataBlock.isServerNeedStringParameter);
+        commandsData.setServerNeedElementParameter(dataBlock.isServerNeedElementParameter);
+        commandsData.setUserNeedToShowFlatArr(dataBlock.isUserNeedToShowFlatArr);
+        commandsData.setFlats(dataBlock.getFlats());
+
+    }
+
+
+//    public void requestsProcessing(){
+//        while (true){
+//            try {
+////                System.out.println(selector.keys().size());
+//                System.out.println(selector.select(1000));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
+    public  static void sendAnswerToUser(DatagramChannel datagramChannel, CommandsData commandsData){
+        DataBlock dataBlock = new DataBlock();
+//        ByteBuffer byteBuffer = ByteBuffer.wrap(ObjectProcessing.serializeObject(commandsData));
         try {
+//            System.out.println("ppp");
+//            datagramChannel.send(byteBuffer, datagramChannel.socket().getRemoteSocketAddress());
+//            DataBlock dataBlock = new DataBlock();
+            BufferedReader bufferedReader = commandsData.getBufferedReader();
+            commandsData.setBufferedReader(null);
+            copyFieldsFromTo(commandsData, dataBlock);
+            dataBlock.setCommandsData(commandsData);
+            ByteBuffer byteBuffer = ByteBuffer.wrap(ObjectProcessing.serializeObject(dataBlock));
+//            byteBuffer = ByteBuffer.wrap(ObjectProcessing.serializeObject(dataBlock));
             datagramChannel.send(byteBuffer, datagramChannel.socket().getRemoteSocketAddress());
+            commandsData.setBufferedReader(bufferedReader);
+
+//            System.out.println("ttt");
         } catch (IOException e) {
             System.out.println("Can't send object to User!");
             e.printStackTrace();

@@ -56,6 +56,7 @@ public class WorkWithUser {
         }
 
         commandsData.setCreator(Creator.USER);
+//        System.out.println("processingAndStartUserCommand");
         commandCenter.processingAndStartUserCommand(commandsData, datagramChannel);
 
 

@@ -1,82 +1,106 @@
-//package L6Server;
-//
-////import L.Commands.*;
-////import L5.Commands.CommandsData;
-//
-//import CommonClasses.CommandsData;
-////import CommonClasses.DataBlock;
-//import L6Server.Commands.*;
-//
-//import java.io.*;
-//
-///**новый объект этого класса создаётся, когда вводится команда execute_script. Аналогичен по работе user-у, но поток ввода меняется на поток из файла
-// * + команды создвются с дополнительным параметром bufferReader для заполнения этого поля в CommandsData объектах создаваемых коман,
-// * чтобы чтение продолжалось из одного и того же файла с без остановки
-// */
-//public class ExecuteScriptCommandRealization {
-//
-//    /**метод запускаемый при вводе команды execute_script*/
-//    public void startScript(CommandsData commandsData, FlatCollection flatCollection, String fileAddress, TransferCenter transferCenter, CommandsData otherCommandsData){
-//        CommandCenter cc = new CommandCenter(fileAddress, new AddCommand(flatCollection), new AddIfMinCommand(flatCollection), new ClearCommand(flatCollection), new ExecuteScriptCommand(flatCollection, fileAddress),
-//                new FilterLessThanTransportCommand(flatCollection), new HelpCommand(), new InfoCommand(flatCollection), new PrintFieldAscendingNumberOfRoomsCommand(flatCollection),
-//                new RemoveByIdCommand(flatCollection), new RemoveHeadCommand(flatCollection), new RemoveLowerCommand(flatCollection), /*new SaveCommand(flatCollection, fileAddress),*/
-//                new ShowCommand(flatCollection), new SumOfNumberOfRoomsCommand(flatCollection), new UpdateIdCommand(flatCollection));
-//
-//
-//        boolean exit = false;
-//        String line = null;
-//        BufferedReader bufferedReader = null;
-//        try {
-//            bufferedReader = new BufferedReader(new FileReader(new File(commandsData.getParameter())));
-//        }catch (FileNotFoundException e){
-//            System.out.println("Проблемва с загрузкой файла " + commandsData.getParameter());
-//        }
-//
-//        try {
-//            line = bufferedReader.readLine();
-//        } catch (Exception e) {
+package L6Server;
+
+//import L.Commands.*;
+//import L5.Commands.CommandsData;
+
+import CommonClasses.CommandsData;
+//import CommonClasses.DataBlock;
+import CommonClasses.Creator;
+import L6Server.Commands.*;
+
+import java.io.*;
+import java.nio.channels.DatagramChannel;
+
+/**новый объект этого класса создаётся, когда вводится команда execute_script. Аналогичен по работе user-у, но поток ввода меняется на поток из файла
+ * + команды создвются с дополнительным параметром bufferReader для заполнения этого поля в CommandsData объектах создаваемых коман,
+ * чтобы чтение продолжалось из одного и того же файла с без остановки
+ */
+public class ExecuteScriptCommandRealization {
+
+    /**метод запускаемый при вводе команды execute_script*/
+    public void startScript(FlatCollection flatCollection, String fileAddress, CommandsData commandsData, DatagramChannel datagramChannel){
+        CommandCenter cc = new CommandCenter(fileAddress, new AddCommand(flatCollection), new AddIfMinCommand(flatCollection), new ClearCommand(flatCollection), new ExecuteScriptCommand(flatCollection, fileAddress),
+                new FilterLessThanTransportCommand(flatCollection), new HelpCommand(), new InfoCommand(flatCollection), new PrintFieldAscendingNumberOfRoomsCommand(flatCollection),
+                new RemoveByIdCommand(flatCollection), new RemoveHeadCommand(flatCollection), new RemoveLowerCommand(flatCollection), /*new SaveCommand(flatCollection, fileAddress),*/
+                new ShowCommand(flatCollection), new SumOfNumberOfRoomsCommand(flatCollection), new UpdateIdCommand(flatCollection));
+
+
+        boolean exit = false;
+        String line = null;
+        BufferedReader bufferedReader = null;
+        commandsData.setCreator(Creator.SCRIPT);
+        try {
+            bufferedReader = new BufferedReader(new FileReader(new File(commandsData.getParameter())));
+        }catch (FileNotFoundException e){
+            commandsData.setPhrase("Проблемва с загрузкой файла " + commandsData.getParameter());
+            commandsData.setCommandEnded(true);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+            return;
+        }
+
+        try {
+            line = bufferedReader.readLine();
+        } catch (Exception e) {
 //            System.out.println("Проблема с загрузкой скрипта из файла в первой же строке!");
-//        }
-//
-//        while ((line != null) & (!exit)){
-//
-//            String command = line;
-//
-//                if(command.equals("")){ }
-//                else {
-//                    CommandsData commandVariation = cc.whatTheCommand(command);
-//                    if(commandVariation == null){
-//                        System.out.println("Такой команды не существует: " + line);
-//                    }
-//                    else {
-//                        if(commandVariation.equals(CommandsData.EXIT)){
-////                            exit = true;
-//                            System.out.println("В файле была найдена команда exit. Программа завершается!");
-//                            System.exit(0);
-//                        }
-//                        else {
-//                            cc.processingAndStartScriptCommand(command, commandsData, bufferedReader, transferCenter, otherCommandsData);
-//                        }
-//                    }
-//                }
-//            try {
-//                line = bufferedReader.readLine();
-//            } catch (IOException e) {
+            commandsData.setPhrase("Проблема с загрузкой скрипта из файла в первой же строке!" + commandsData.getParameter());
+            commandsData.setCommandEnded(true);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+            return;
+        }
+
+//        System.out.println("ttt");
+
+        while ((line != null) & (!exit)){
+//        System.out.println(line);
+            String command = line;
+
+                if(command.equals("")){ }
+                else {
+                    CommandsData commandVariation = cc.whatTheCommand(command);
+                    if(commandVariation == null){
+                        System.out.println("Такой команды не существует: " + line);
+                    }
+                    else {
+                        if(commandVariation.equals(CommandsData.EXIT)){
+//                            exit = true;
+                            System.out.println("В файле была найдена команда exit. Программа завершается!");
+                            System.exit(0);
+                        }
+                        else {
+//                            System.out.println("Start new command");
+//                            System.out.println(line);
+                            cc.processingAndStartScriptCommand(commandsData, bufferedReader, datagramChannel, command);
+                        }
+                    }
+                }
+            try {
+                line = bufferedReader.readLine();
+//                System.out.println(line);
+            } catch (IOException e) {
+//                line = null;
 //                System.out.println("Проблема с загрузкой скрипта из файла. Хотя несколько строк уже было прочитано!");
-//            }
-//        }
-//        commandsData.getOpeningFiles().pop();
-//        //убирает последнее добавленне в стек имя файла тк он полностью прочитан
-//
-//
-//        if(commandsData.getOpeningFiles().size() == 0){
+                commandsData.setPhrase("Проблема с загрузкой скрипта из файла. Хотя несколько строк уже было прочитано!" + commandsData.getParameter());
+                commandsData.setCommandEnded(true);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+                return;
+            }
+        }
+        commandsData.getOpeningFiles().pop();
+        //убирает последнее добавленне в стек имя файла тк он полностью прочитан
+//        System.out.println("end File");
+
+        if(commandsData.getOpeningFiles().size() == 0){
+            System.out.println("Скрипт завершён!");
+            commandsData.setPhrase("Скрипт завершён!");
+            commandsData.setCommandEnded(true);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //            DataBlock dataBlock = new DataBlock();
 //            dataBlock.setPhrase("Скрипт завершён!");
 //            dataBlock.setAllRight(true);
 //            transferCenter.sendObjectToUser(dataBlock);
-//        }
-//    }
-//}
+        }
+    }
+}
 
 
 

@@ -5,9 +5,11 @@ package L6Server.Commands;
 
 import CommonClasses.CommandsData;
 //import L6Server.ExecuteScriptCommandRealization;
+import L6Server.ExecuteScriptCommandRealization;
 import L6Server.FlatCollection;
 import L6Server.TransferCenter;
 
+import java.io.BufferedReader;
 import java.nio.channels.DatagramChannel;
 
 public class ExecuteScriptCommand{
@@ -28,6 +30,6 @@ public class ExecuteScriptCommand{
 
 
     public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
-//        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, commandsData);
+        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, commandsData, datagramChannel);
     }
 }

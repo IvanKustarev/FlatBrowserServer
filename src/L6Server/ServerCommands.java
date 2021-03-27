@@ -27,7 +27,7 @@ public class ServerCommands extends Thread{
             }
             if(str.equals("exit")){
                 System.out.println("Завершаю работу сервера!");
-                exit = true;
+                System.exit(0);
             }
         }
     }

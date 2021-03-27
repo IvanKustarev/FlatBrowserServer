@@ -155,7 +155,7 @@ public class CommandCenter {
     }
 
     /**берёт из строки команды пользователя её параметр и пакует это всё в Commands объект*/
-    private CommandsData packingCommandInCommandsObject(String command, Boolean commandWithParameter, Creator creator){
+    private CommandsData packingCommandInCommandsObject(String command, Boolean commandWithParameter, Creator creator, CommandsData commandsData){
         CommandsData commandObject = null;
 
 
@@ -193,6 +193,11 @@ public class CommandCenter {
 //            System.out.println(command);
             commandObject.setParameter(comWords[index+1]);
         }
+
+        commandObject.setBufferedReader(commandsData.getBufferedReader());
+        commandObject.setCreator(Creator.SCRIPT);
+
+
         return commandObject;
     }
 
@@ -238,41 +243,50 @@ public class CommandCenter {
     }
 
 //    /**запуск команды осуществляемый user-ом*/
-//    public void processingAndStartScriptCommand(String command, CommandsData commandsData, BufferedReader bufferedReader, TransferCenter transferCenter, CommandsData otherCommandsData){
-//        CommandsData scriptCommand = packingCommandInCommandsObject(command, isCommandWithParameter(command), Creator.SCRIPT);
-//
-//        boolean recursWasStarted = false;
-//        scriptCommand.setBufferedReader(bufferedReader);
-//        if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
-//            //дополнительные параметры для этой команды
-//
-//            String[] nameOfOpenedFiles = new String[commandsData.getOpeningFiles().toArray().length];
-//            for(int i =0; i < commandsData.getOpeningFiles().toArray().length; i++){
-//                nameOfOpenedFiles[i] = (String) (commandsData.getOpeningFiles().toArray())[i];
-//            }
-//
-//            for (String nameOfOpenedFile : nameOfOpenedFiles){
-//                if(nameOfOpenedFile.equals(commandsData.getParameter())){
-//                    recursWasStarted = true;
-//                }
-//            }
-//        }
-//
-//        if(recursWasStarted){
-////            CommandsData dataBlock = new DataBlock();
+    public void processingAndStartScriptCommand(/*String command, CommandsData commandsData, BufferedReader bufferedReader, TransferCenter transferCenter, CommandsData otherCommandsData*/
+    CommandsData commandsData, BufferedReader bufferedReader, DatagramChannel datagramChannel, String command/*TransferCenter transferCenter,*/){
+        CommandsData scriptCommand = packingCommandInCommandsObject(command, isCommandWithParameter(command), Creator.SCRIPT, commandsData);
+//        System.out.println(scriptCommand.name());
+        boolean recursWasStarted = false;
+        scriptCommand.setBufferedReader(bufferedReader);
+        if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
+            //дополнительные параметры для этой команды
+
+            String[] nameOfOpenedFiles = new String[scriptCommand.getOpeningFiles().toArray().length];
+            for(int i =0; i < scriptCommand.getOpeningFiles().toArray().length; i++){
+                nameOfOpenedFiles[i] = (String) (scriptCommand.getOpeningFiles().toArray())[i];
+//                System.out.println(nameOfOpenedFiles[i]);
+            }
+
+            for (String nameOfOpenedFile : nameOfOpenedFiles){
+                if(nameOfOpenedFile.equals(scriptCommand.getParameter())){
+                    recursWasStarted = true;
+                }
+            }
+        }
+
+//        System.out.println(commandsData.name());
+//        recursWasStarted = false;
+        if(recursWasStarted){
+//            CommandsData dataBlock = new DataBlock();
 //            dataBlock.setAllRight(true);
 //            dataBlock.setPhrase("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
 //            transferCenter.sendObjectToUser(dataBlock);
-//
-////            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
-//        }
-//        else {
-//            if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
-//                scriptCommand.addOpeningFile(scriptCommand.getParameter());
-//            }
-//            startCommand(scriptCommand, transferCenter, otherCommandsData);
-//        }
-//    }
+            scriptCommand.setCommandEnded(false);
+            scriptCommand.setPhrase("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
+            TransferCenter.sendAnswerToUser(datagramChannel, scriptCommand);
+
+//            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
+        }
+        else {
+            if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
+                scriptCommand.addOpeningFile(scriptCommand.getParameter());
+            }
+//            System.out.println(scriptCommand.name());
+//            System.out.println(scriptCommand.getCreator());
+            startCommand(/*scriptCommand, transferCenter, otherCommandsData*/ datagramChannel, scriptCommand);
+        }
+    }
 
     /**получает уже запакованную со всеми параметрами команду и запускает её*/
     public void startCommand(/*CommandsData commandObject, TransferCenter transferCenter,*/DatagramChannel datagramChannel, CommandsData commandsData){

@@ -39,7 +39,7 @@ public class HelpCommand implements Command {
 
         commandsData.setPhrase(phrase);
         commandsData.setCommandEnded(true);
-        TransferCenter.sendObject(datagramChannel, commandsData);
+        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //        dataBlock.setAllRight(true);
 //        transferCenter.sendObjectToUser(dataBlock);
     }

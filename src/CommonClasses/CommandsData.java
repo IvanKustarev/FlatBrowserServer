@@ -42,6 +42,7 @@ public enum CommandsData implements Serializable {
         }
 
         {
+
             commandWithElementParameter = true;
         }
     },

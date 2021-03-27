@@ -33,21 +33,20 @@ public class Main {
 //        System.out.println("Файл успешно загружен.");
 ////        fileAddress = "NewTest.txt";
 //
-//        loadFile(); //      Загружаем файл из пямяти в коллекцию
+        loadFile(); //      Загружаем файл из пямяти в коллекцию
 //
 //
-//        WorkWithUser workWithUser = new WorkWithUser(flatCollection, fileAddress);
+
+        WorkWithUser workWithUser = new WorkWithUser(flatCollection, fileAddress);
 //        workWithUser.startWorkWithUser();
 
-//        TransferCenter transferCenter = new TransferCenter();
-//        transferCenter.requestsProcessing();
+        TransferCenter transferCenter = new TransferCenter(workWithUser);
 
-        CommandsData commandsData = CommandsData.ADD;
-        commandsData.setPhrase("true");
-        byte [] bytes = ObjectProcessing.serializeObject(commandsData);
-        Object obj = ObjectProcessing.deSerializeObject(bytes);
-        CommandsData commandsData1 = (CommandsData) obj;
-        System.out.println(commandsData1.getPhrase());
+        ServerCommands serverCommands = new ServerCommands(flatCollection, fileAddress);
+        serverCommands.start();
+
+        transferCenter.requestsProcessing();
+
     }
 
     /**Загружает данные из файла в памяти в объект класса File. Проверяет на наличие ошибок доступа и прав к файлу в памяти*/

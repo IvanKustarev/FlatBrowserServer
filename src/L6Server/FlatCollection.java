@@ -73,7 +73,8 @@ public class FlatCollection {
             //До того момента сервер отправляет сообщения и не получает ответы на них
             commandsData.setCommandEnded(false);
         }
-        TransferCenter.sendObject(datagramChannel, commandsData);
+//        System.out.println(commandsData.getCreator());
+        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 
 //        if(commandsData.getCreator().equals(Creator.USER)){
 //            dataBlock.setAllRight(true);
@@ -88,27 +89,40 @@ public class FlatCollection {
 
     public void show(DatagramChannel datagramChannel, CommandsData commandsData){
 
+//        Arrays.stream(setOfFlats.toArray()).toArray();
+        Flat[] flats = (Flat[]) setOfFlats.stream().toArray();
 
-        Flat[] flats = new Flat[setOfFlats.toArray().length];
-        Iterator iterator = setOfFlats.iterator();
-        int i = 0;
-        while (iterator.hasNext()){
-            flats[i] = (Flat)iterator.next();
-            i++;
-        }
 
         SortFlatArrBySize sortFlatArrBySize = new SortFlatArrBySize();
+        commandsData.setFlats(sortFlatArrBySize.startSorting(flats));
+
+//        Flat[] flats = new Flat[setOfFlats.toArray().length];
+//        Iterator iterator = setOfFlats.iterator();
+//        int i = 0;
+//        while (iterator.hasNext()){
+//            flats[i] = (Flat)iterator.next();
+//            i++;
+//        }
+
+
+
+
+
+//        SortFlatArrBySize sortFlatArrBySize = new SortFlatArrBySize();
 
 //        DataBlock dataBlock = new DataBlock();
 
 //        dataBlock.setFlats(sortFlatArrBySize.startSorting(flats));
 //        dataBlock.setUserNeedToShowFlatArr(true);
 
-        commandsData.setFlats(sortFlatArrBySize.startSorting(flats));
+        commandsData.setUserNeedToShowFlatArr(true);
+        commandsData.setPhrase("Содержимое коллекции: \n");
+//        commandsData.setFlats(sortFlatArrBySize.startSorting(flats));
 
 
         if(commandsData.getFlats().length == 0){
             commandsData.setPhrase("Коллекция пустая!");
+            commandsData.setUserNeedToShowFlatArr(false);
         }
         if(commandsData.getCreator().equals(Creator.USER)){
             commandsData.setCommandEnded(true);
@@ -118,7 +132,7 @@ public class FlatCollection {
             //До того момента сервер отправляет сообщения и не получает ответы на них
             commandsData.setCommandEnded(false);
         }
-        TransferCenter.sendObject(datagramChannel, commandsData);
+        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 
 
 //        if(command.getCreator().equals(Creator.USER))
@@ -142,7 +156,7 @@ public class FlatCollection {
 //            commandsData.setAllRight(true);
             commandsData.setCommandEnded(true);
 //            transferCenter.sendObjectToUser(dataBlock);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
         }
         else {
             long flatID = createId();
@@ -151,7 +165,7 @@ public class FlatCollection {
             commandsData.setPhrase("Объект добавлен в коллекцию!");
 //            dataBlock.setAllRight(false);
             commandsData.setCommandEnded(false);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //            transferCenter.receiveObjectFromUser();
         }
     }
@@ -170,13 +184,13 @@ public class FlatCollection {
         if(commandsData.getCreator().equals(Creator.USER)){
 //            commandsData.setAllRight(true);
             commandsData.setCommandEnded(true);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
         }
         else {
 //            commandsData.setAllRight(false);
             commandsData.setCommandEnded(false);
 //            commandsData.sendObjectToUser(dataBlock);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //            transferCenter.receiveObjectFromUser();
         }
     }
@@ -221,13 +235,13 @@ public class FlatCollection {
                     if(commandsData.getCreator().equals(Creator.USER)){
 //                        commandsData.setAllRight(true);
                         commandsData.setCommandEnded(true);
-                        TransferCenter.sendObject(datagramChannel, commandsData);
+                        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                     }
                     else {
 //                        commandsData.setAllRight(false);
                         commandsData.setCommandEnded(false);
 //                        .sendObjectToUser(dataBlock);
-                        TransferCenter.sendObject(datagramChannel, commandsData);
+                        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                        transferCenter.receiveObjectFromUser();
                     }
 
@@ -241,14 +255,14 @@ public class FlatCollection {
 //                dataBlock.setAllRight(true);
                 commandsData.setCommandEnded(true);
 //                transferCenter.sendObjectToUser(dataBlock);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
             }
             else {
                 commandsData.setPhrase("Коллекция пустая!");
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
 //                commandsData.sendObjectToUser(dataBlock);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                transferCenter.receiveObjectFromUser();
             }
         }
@@ -283,13 +297,13 @@ public class FlatCollection {
 //            commandsData.setAllRight(true);
             commandsData.setCommandEnded(true);
 //            transferCenter.sendObjectToUser(dataBlock);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
         }
         else {
 //            dataBlock.setAllRight(false);
             commandsData.setCommandEnded(false);
 //            .sendObjectToUser(dataBlock);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //            transferCenter.receiveObjectFromUser();
         }
     }
@@ -325,13 +339,13 @@ public class FlatCollection {
 //            commandsData.setAllRight(true);
             commandsData.setCommandEnded(true);
 //            transferCenter.sendObjectToUser(dataBlock);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
         }
         else {
 //            dataBlock.setAllRight(false);
             commandsData.setCommandEnded(false);
 //            transferCenter.sendObjectToUser(dataBlock);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //            transferCenter.receiveObjectFromUser();
         }
 
@@ -362,7 +376,7 @@ public class FlatCollection {
 //            dataBlock.setAllRight(false);
             commandsData.setCommandEnded(false);
 //            transferCenter.sendObjectToUser(dataBlock);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //            DataBlock correctInfoFromUser = (DataBlock) transferCenter.receiveObjectFromUser();
 //            command.setParameter(correctInfoFromUser.getParameter());
 //            updateId(command, transferCenter, commandsData);
@@ -377,7 +391,7 @@ public class FlatCollection {
                     commandsData.setPhrase("Приступаем к обновлению параметров файла с ID: " + id);
 //                transferCenter.sendObjectToUser(requestAboutElement);
 //                    commandsData.setServerNeedElementParameter(true);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                 }
                 else {
 //                    dataBlock = (DataBlock) transferCenter.receiveObjectFromUser();
@@ -388,7 +402,7 @@ public class FlatCollection {
 
                     commandsData.setCommandEnded(true);
                     commandsData.setPhrase("Элемент успешно обновлён!");
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                 }
 
 //                dataBlock = new DataBlock();
@@ -411,7 +425,7 @@ public class FlatCollection {
                 commandsData.setCommandEnded(false);
 //                transferCenter.sendObjectToUser(dataBlock);
 //                transferCenter.receiveObjectFromUser();
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
             }
         }
     }
@@ -431,7 +445,7 @@ public class FlatCollection {
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
 //                    transferCenter.sendObjectToUser(dataBlock);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 
                 }
             }
@@ -441,7 +455,7 @@ public class FlatCollection {
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
 //                transferCenter.sendObjectToUser(dataBlock);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 
 //                dataBlock = (DataBlock) transferCenter.receiveObjectFromUser();
 //                command.setParameter(dataBlock.getParameter());
@@ -461,7 +475,7 @@ public class FlatCollection {
 //                System.out.println("Элемент удалён.");
 //                    dataBlock.setAllRight(false);
                     commandsData.setCommandEnded(false);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    transferCenter.sendObjectToUser(dataBlock);
 //                    transferCenter.receiveObjectFromUser();
                 }
@@ -507,7 +521,7 @@ public class FlatCollection {
                     commandsData.setPhrase("Нет подходящих для удаления элементов");
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    transferCenter.sendObjectToUser(dataBlock);
                 }
                 else {
@@ -516,7 +530,7 @@ public class FlatCollection {
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
 //                    transferCenter.sendObjectToUser(dataBlock);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                 }
             }
             else {
@@ -525,7 +539,7 @@ public class FlatCollection {
                     commandsData.setPhrase("Нет подходящих для удаления элементов");
 //                    dataBlock.setAllRight(false);
                     commandsData.setCommandEnded(false);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    transferCenter.sendObjectToUser(dataBlock);
 //                    transferCenter.receiveObjectFromUser();
                 } else {
@@ -533,7 +547,7 @@ public class FlatCollection {
                     commandsData.setPhrase("Подходящие элементы были удалены.");
 //                    dataBlock.setAllRight(false);
                     commandsData.setCommandEnded(false);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    transferCenter.sendObjectToUser(dataBlock);
 //                    transferCenter.receiveObjectFromUser();
                 }
@@ -545,7 +559,7 @@ public class FlatCollection {
                 commandsData.setPhrase("Коллекция пустая!");
 //                dataBlock.setAllRight(true);
                 commandsData.setCommandEnded(true);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                transferCenter.sendObjectToUser(dataBlock);
             }
             else {
@@ -553,7 +567,7 @@ public class FlatCollection {
                 commandsData.setPhrase("Коллекция пустая!");
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                transferCenter.sendObjectToUser(dataBlock);
 //                transferCenter.receiveObjectFromUser();
             }
@@ -598,14 +612,14 @@ public class FlatCollection {
                 commandsData.setPhrase(phrase);
 //                dataBlock.setAllRight(true);
                 commandsData.setCommandEnded(true);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                transferCenter.sendObjectToUser(dataBlock);
             }
             else {
                 commandsData.setPhrase(phrase);
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                transferCenter.sendObjectToUser(dataBlock);
 //                transferCenter.receiveObjectFromUser();
             }
@@ -616,14 +630,14 @@ public class FlatCollection {
                     commandsData.setPhrase("В коллекции содержится всего один элемент: ID - " + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    transferCenter.sendObjectToUser(dataBlock);
                 }
                 else {
 //                System.out.println("Коллекция пустая!");
                     commandsData.setPhrase("Коллекция пустая!");
                     commandsData.setCommandEnded(true);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    dataBlock.setAllRight(true);
 //                    transferCenter.sendObjectToUser(dataBlock);
                 }
@@ -632,7 +646,7 @@ public class FlatCollection {
                 if(flats.length == 1){
                     commandsData.setPhrase("В коллекции содержится всего один элемент: ID - " + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
                     commandsData.setCommandEnded(false);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    dataBlock.setAllRight(false);
 //                    transferCenter.sendObjectToUser(dataBlock);
 //                    transferCenter.receiveObjectFromUser();
@@ -641,7 +655,7 @@ public class FlatCollection {
 //                System.out.println("Коллекция пустая!");
                     commandsData.setPhrase("Коллекция пустая!");
                     commandsData.setCommandEnded(false);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    dataBlock.setAllRight(false);
 //                    transferCenter.sendObjectToUser(dataBlock);
 //                    transferCenter.receiveObjectFromUser();
@@ -667,7 +681,7 @@ public class FlatCollection {
             commandsData.setCommandEnded(false);
             commandsData.setPhrase("Такого варианта транспора не существует!\nВведите другой.");
             commandsData.setServerNeedStringParameter(true);
-            TransferCenter.sendObject(datagramChannel, commandsData);
+            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
             return;
 //            transferCenter.sendObjectToUser(dataBlock);
 //            transferCenter.receiveObjectFromUser();
@@ -689,7 +703,7 @@ public class FlatCollection {
                             commandsData.setUserNeedToShowFlatArr(true);
 //                            dataBlock.setAllRight(true);
                             commandsData.setCommandEnded(true);
-                            TransferCenter.sendObject(datagramChannel, commandsData);
+                            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                            transferCenter.sendObjectToUser(dataBlock);
                             wasPrinted = true;
                         }
@@ -697,7 +711,7 @@ public class FlatCollection {
                             commandsData.setFlats(flats);
                             commandsData.setUserNeedToShowFlatArr(true);
                             commandsData.setCommandEnded(false);
-                            TransferCenter.sendObject(datagramChannel, commandsData);
+                            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                            dataBlock.setAllRight(false);
 //                            transferCenter.sendObjectToUser(dataBlock);
 //                            transferCenter.receiveObjectFromUser();
@@ -711,13 +725,13 @@ public class FlatCollection {
                     commandsData.setPhrase("Нет ни одного подходящего элемента в коллекции!");
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    transferCenter.sendObjectToUser(dataBlock);
                 }
                 else {
                     commandsData.setPhrase("Нет ни одного подходящего элемента в коллекции!");
                     commandsData.setCommandEnded(false);
-                    TransferCenter.sendObject(datagramChannel, commandsData);
+                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                    dataBlock.setAllRight(false);
 //                    transferCenter.sendObjectToUser(dataBlock);
 //                    transferCenter.receiveObjectFromUser();
@@ -731,13 +745,13 @@ public class FlatCollection {
                 commandsData.setPhrase("В коллекции нет элементов для сравнения!");
 //                dataBlock.setAllRight(true);
                 commandsData.setCommandEnded(true);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                transferCenter.sendObjectToUser(dataBlock);
             }
             else {
                 commandsData.setPhrase("В коллекции нет элементов для сравнения!");
                 commandsData.setCommandEnded(false);
-                TransferCenter.sendObject(datagramChannel, commandsData);
+                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //                dataBlock.setAllRight(false);
 //                transferCenter.sendObjectToUser(dataBlock);
 //                transferCenter.receiveObjectFromUser();
@@ -803,17 +817,17 @@ public class FlatCollection {
 //        }
 //    }
 
-    private String informationGetter(CommandsData command){
-        if(command.getCreator().equals(Creator.USER)){
-            return (new Scanner(System.in).nextLine());
-        }
-        else {
-            try {
-                return command.getBufferedReader().readLine();
-            } catch (IOException e) {
-                System.out.println("Сканер не смог считать стороку из файла");
-            }
-            return null;
-        }
-    }
+//    private String informationGetter(CommandsData command){
+//        if(command.getCreator().equals(Creator.USER)){
+//            return (new Scanner(System.in).nextLine());
+//        }
+//        else {
+//            try {
+//                return command.getBufferedReader().readLine();
+//            } catch (IOException e) {
+//                System.out.println("Сканер не смог считать стороку из файла");
+//            }
+//            return null;
+//        }
+//    }
 }
