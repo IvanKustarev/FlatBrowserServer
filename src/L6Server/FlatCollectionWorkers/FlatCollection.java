@@ -1,14 +1,14 @@
-package L6Server;
+package L6Server.FlatCollectionWorkers;
 
 import CommonClasses.*;
 import CommonClasses.ApartmentDescription.ComparisonOfAttractiveness;
 import CommonClasses.ApartmentDescription.Transport;
 //import L6Server.Commands.CommandsData;
 import L6Server.InputeOutputeWork.UpLoadingCollectionToFile;
+import L6Server.TransferCenter;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.channels.DatagramChannel;
 import java.util.*;
@@ -90,7 +90,14 @@ public class FlatCollection {
     public void show(DatagramChannel datagramChannel, CommandsData commandsData){
 
 //        Arrays.stream(setOfFlats.toArray()).toArray();
-        Flat[] flats = (Flat[]) setOfFlats.stream().toArray();
+
+        Object[] arr = setOfFlats.stream().toArray();
+
+        Flat[] flats = new Flat[arr.length];
+
+        for(int i =0;i<flats.length;i++){
+            flats[i] = (Flat) arr[i];
+        }
 
 
         SortFlatArrBySize sortFlatArrBySize = new SortFlatArrBySize();

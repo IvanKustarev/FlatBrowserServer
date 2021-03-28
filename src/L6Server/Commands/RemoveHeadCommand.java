@@ -2,8 +2,7 @@ package L6Server.Commands;
 
 
 import CommonClasses.CommandsData;
-import L6Server.FlatCollection;
-import L6Server.TransferCenter;
+import L6Server.FlatCollectionWorkers.FlatCollection;
 
 import java.nio.channels.DatagramChannel;
 

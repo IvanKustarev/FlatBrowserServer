@@ -1,21 +1,20 @@
 package L6Server;//import L5.L6Server.InputeOutputeWork.LoadingCollectionFromFile;
-import CommonClasses.AbstractDataBlock;
-import CommonClasses.CommandsData;
 //import CommonClasses.ConnectionSupport.ConnectionSupporter;
 //import CommonClasses.DataBlock;
-import CommonClasses.Flat;
+import L6Server.FlatCollectionWorkers.FlatCollection;
+import L6Server.OptionalThrows.ServerCommands;
 import L6Server.InputeOutputeWork.*;
 //import L6User.L6User.AnswerToServer;
-import org.w3c.dom.Document;
 
-import javax.swing.text.html.HTMLDocument;
-import javax.xml.parsers.ParserConfigurationException;
+        import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+        import java.io.IOException;
 import java.net.*;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Scanner;
+        import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class Main {
 //    AnswerToServer answerToServer;
@@ -25,41 +24,72 @@ public class Main {
     private static boolean isScriptWorkingNow = false;
     private static InetSocketAddress serverSocketAddress = null;
 
+    static Logger LOGGER;
+    static {
+        try {
+            FileInputStream ins = new FileInputStream("logConfig");
+            LogManager.getLogManager().readConfiguration(ins);
+            LOGGER = Logger.getLogger(Main.class.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**метод отвечает за создание нового пользователя, запуск методов отвечающих за загрузку файла из памяти и запуск метода, получения команды*/
     public static void main(String[] args) throws ParserConfigurationException, IOException, ClassNotFoundException {
 
+        try {
+            LOGGER.log(Level.INFO, "Начало работы программы. Загружаем файл из памяти.");
+            loadFile(); //      Загружаем файл из пямяти в коллекцию
+        }catch (Exception e){
+            LOGGER.log(Level.WARNING, "Ошибка при загрузке файла в коллекцию.");
+            System.exit(1);
+        }
 
-//        fileAddress = gettingAddress(args);
-//        System.out.println("Файл успешно загружен.");
-////        fileAddress = "NewTest.txt";
-//
-        loadFile(); //      Загружаем файл из пямяти в коллекцию
-//
-//
+        WorkWithUser workWithUser;
+        TransferCenter transferCenter = null;
+        try {
+            LOGGER.log(Level.INFO, "Создание workWithUser и Transfer center");
+            workWithUser = new WorkWithUser(flatCollection, fileAddress);
+            transferCenter = new TransferCenter(workWithUser);
+        }catch (Exception e){
+            LOGGER.log(Level.WARNING, "Проблем с созданием workWithUser и Transfer center ", e);
+            System.exit(1);
+        }
 
-        WorkWithUser workWithUser = new WorkWithUser(flatCollection, fileAddress);
-//        workWithUser.startWorkWithUser();
+        try {
+            LOGGER.log(Level.INFO, "Начало процесса проверки команд от сервера (exit и save)");
+            startControllingServerCommands();
+        }catch (Exception e){
+            LOGGER.log(Level.WARNING, "Проблема с началом проверки команд от сервера ", e);
+        }
 
-        TransferCenter transferCenter = new TransferCenter(workWithUser);
+        try {
+            LOGGER.log(Level.INFO, "Начало приёма сервером пользовательских команд");
+            transferCenter.requestsProcessing();
+        }catch (Exception e){
+            LOGGER.log(Level.INFO, "Проблема с приёмом пользовательских команд ", e);
+        }
+    }
 
+    private static void startControllingServerCommands(){
         ServerCommands serverCommands = new ServerCommands(flatCollection, fileAddress);
         serverCommands.start();
-
-        transferCenter.requestsProcessing();
-
     }
 
-    /**Загружает данные из файла в памяти в объект класса File. Проверяет на наличие ошибок доступа и прав к файлу в памяти*/
-    public static Document startLoading() throws ParserConfigurationException {
-        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
-        return input.load(fileAddress);
-    }
+//    /**Загружает данные из файла в памяти в объект класса File. Проверяет на наличие ошибок доступа и прав к файлу в памяти*/
+//    public static Document startLoading() throws ParserConfigurationException {
+//        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
+//        return input.load(fileAddress);
+//    }
 
 
     private static void loadFile() throws ParserConfigurationException {
         LoadingCollectionFromFile input = new LoadingCollectionFromFile();
 //        flatCollection = input.convert(startLoading());
-        flatCollection = input.convert(startLoading());
+//        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
+//        return input.load(fileAddress);
+        flatCollection = input.convert(input.load(fileAddress));
     }
 
     public static String gettingAddress(String[] args){

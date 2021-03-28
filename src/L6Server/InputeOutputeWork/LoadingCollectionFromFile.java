@@ -3,6 +3,7 @@ package L6Server.InputeOutputeWork;
 import CommonClasses.Flat;
 import CommonClasses.ApartmentDescription.*;
 import L6Server.*;
+import L6Server.FlatCollectionWorkers.FlatCollection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

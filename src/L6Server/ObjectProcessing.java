@@ -98,7 +98,7 @@ public class ObjectProcessing {
         return serObj;
     }
 
-    public static Object deSerializeObject(byte[] objectByteArr){
+    public static Object deSerializeObject(byte[] objectByteArr) throws ClassNotFoundException, IOException {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(objectByteArr);
 
         ObjectInputStream objectInputStream = null;
@@ -111,13 +111,13 @@ public class ObjectProcessing {
         }
 
         Object object = null;
-        try {
+//        try {
             object = objectInputStream.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
         return object;
     }
 }
