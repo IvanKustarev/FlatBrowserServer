@@ -2,7 +2,7 @@ package L6Server.Commands;
 
 import CommonClasses.CommandsData;
 //import CommonClasses.DataBlock;
-import L6Server.FlatCollection;
+import L6Server.FlatCollectionWorkers.FlatCollection;
 import L6Server.TransferCenter;
 
 import java.nio.channels.DatagramChannel;
@@ -39,6 +39,7 @@ public class HelpCommand implements Command {
 
         commandsData.setPhrase(phrase);
         commandsData.setCommandEnded(true);
+//        System.out.println(phrase);
         TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
 //        dataBlock.setAllRight(true);
 //        transferCenter.sendObjectToUser(dataBlock);

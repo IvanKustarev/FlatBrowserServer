@@ -1,10 +1,11 @@
-package L6Server.Commands;
+package L6Server.CommandUnits;
 
 
 import CommonClasses.CommandsData;
 import CommonClasses.Creator;
 //import CommonClasses.DataBlock;
-import L6Server.FlatCollection;
+import L6Server.Commands.*;
+import L6Server.FlatCollectionWorkers.FlatCollection;
 import L6Server.TransferCenter;
 
 import java.io.BufferedReader;

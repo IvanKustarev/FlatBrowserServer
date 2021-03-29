@@ -1,4 +1,6 @@
-package L6Server;
+package L6Server.OptionalThrows;
+
+import L6Server.FlatCollectionWorkers.FlatCollection;
 
 import java.util.Scanner;
 
@@ -26,7 +28,8 @@ public class ServerCommands extends Thread{
                 flatCollection.save(flatCollection, fileAddress);
             }
             if(str.equals("exit")){
-                System.out.println("Завершаю работу сервера!");
+                System.out.println("Сохраняю коллекцию и завершаю работу сервера!");
+                flatCollection.save(flatCollection, fileAddress);
                 System.exit(0);
             }
         }

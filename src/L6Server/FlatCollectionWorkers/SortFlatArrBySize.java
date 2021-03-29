@@ -1,4 +1,4 @@
-package L6Server;
+package L6Server.FlatCollectionWorkers;
 
 import CommonClasses.Flat;
 

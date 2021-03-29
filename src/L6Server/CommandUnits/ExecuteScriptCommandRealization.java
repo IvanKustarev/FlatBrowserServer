@@ -1,4 +1,4 @@
-package L6Server;
+package L6Server.CommandUnits;
 
 //import L.Commands.*;
 //import L5.Commands.CommandsData;
@@ -7,6 +7,8 @@ import CommonClasses.CommandsData;
 //import CommonClasses.DataBlock;
 import CommonClasses.Creator;
 import L6Server.Commands.*;
+import L6Server.FlatCollectionWorkers.FlatCollection;
+import L6Server.TransferCenter;
 
 import java.io.*;
 import java.nio.channels.DatagramChannel;
@@ -154,7 +156,7 @@ public class ExecuteScriptCommandRealization {
 //        stackOfAddresses.pop();
 //    }
 //
-//    public void startScript(String fileAddress, L6Server.FlatCollection flatCollection){
+//    public void startScript(String fileAddress, L6Server.FlatCollectionWorkers.FlatCollection flatCollection){
 //
 //        try {
 //            File file = new File(fileAddress);
@@ -176,12 +178,12 @@ public class ExecuteScriptCommandRealization {
 //
 //                counterOfLinesInFile++;
 //
-//                L6Server.ExecuteScriptCommandRealization.setScriptAddress(fileAddress, counterOfLinesInFile, 0);
+//                L6Server.CommandUnits.ExecuteScriptCommandRealization.setScriptAddress(fileAddress, counterOfLinesInFile, 0);
 //                endOfProgram = user.processingTheCommand(line, cc);
 //                for(int i=0;i< getScriptAddress().changeOfLinesInFile;i++){
 //                    bufferedReader.readLine();
 //                }
-//                L6Server.ExecuteScriptCommandRealization.deleteLastScriptAddress();
+//                L6Server.CommandUnits.ExecuteScriptCommandRealization.deleteLastScriptAddress();
 //
 //                line = bufferedReader.readLine();
 //            }

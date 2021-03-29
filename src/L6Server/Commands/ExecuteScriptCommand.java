@@ -4,12 +4,10 @@ package L6Server.Commands;
 //import L5.FlatCollection;
 
 import CommonClasses.CommandsData;
-//import L6Server.ExecuteScriptCommandRealization;
-import L6Server.ExecuteScriptCommandRealization;
-import L6Server.FlatCollection;
-import L6Server.TransferCenter;
+//import L6Server.CommandUnits.ExecuteScriptCommandRealization;
+import L6Server.CommandUnits.ExecuteScriptCommandRealization;
+import L6Server.FlatCollectionWorkers.FlatCollection;
 
-import java.io.BufferedReader;
 import java.nio.channels.DatagramChannel;
 
 public class ExecuteScriptCommand{
