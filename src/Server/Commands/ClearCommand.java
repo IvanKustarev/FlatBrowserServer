@@ -2,9 +2,11 @@ package Server.Commands;
 
 
 import CommonClasses.CommandsData;
+import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ClearCommand implements Command {
 
@@ -20,7 +22,7 @@ public class ClearCommand implements Command {
     }
 
     @Override
-    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
-        flatCollection.clear(datagramChannel, commandsData);
+    public void execute(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket) {
+        flatCollection.clear(answersWaitingSending, dataPacket);
     };
 }

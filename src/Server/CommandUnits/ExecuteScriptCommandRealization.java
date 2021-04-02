@@ -7,11 +7,13 @@ import CommonClasses.CommandsData;
 //import CommonClasses.DataBlock;
 import CommonClasses.Creator;
 import Server.Commands.*;
+import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 import Server.TransferCenter;
 
 import java.io.*;
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**новый объект этого класса создаётся, когда вводится команда execute_script. Аналогичен по работе user-у, но поток ввода меняется на поток из файла
  * + команды создвются с дополнительным параметром bufferReader для заполнения этого поля в CommandsData объектах создаваемых коман,
@@ -20,7 +22,8 @@ import java.nio.channels.DatagramChannel;
 public class ExecuteScriptCommandRealization {
 
     /**метод запускаемый при вводе команды execute_script*/
-    public void startScript(FlatCollection flatCollection, String fileAddress, CommandsData commandsData, DatagramChannel datagramChannel){
+    public void startScript(FlatCollection flatCollection, String fileAddress, ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        CommandsData commandsData = dataPacket.getCommandsData();
         CommandCenter cc = new CommandCenter(fileAddress, new AddCommand(flatCollection), new AddIfMinCommand(flatCollection), new ClearCommand(flatCollection), new ExecuteScriptCommand(flatCollection, fileAddress),
                 new FilterLessThanTransportCommand(flatCollection), new HelpCommand(), new InfoCommand(flatCollection), new PrintFieldAscendingNumberOfRoomsCommand(flatCollection),
                 new RemoveByIdCommand(flatCollection), new RemoveHeadCommand(flatCollection), new RemoveLowerCommand(flatCollection), /*new SaveCommand(flatCollection, fileAddress),*/
@@ -36,7 +39,8 @@ public class ExecuteScriptCommandRealization {
         }catch (FileNotFoundException e){
             commandsData.setPhrase("Проблемва с загрузкой файла " + commandsData.getParameter());
             commandsData.setCommandEnded(true);
-            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+//            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+            answersWaitingSending.add(dataPacket);
             return;
         }
 
@@ -46,7 +50,8 @@ public class ExecuteScriptCommandRealization {
 //            System.out.println("Проблема с загрузкой скрипта из файла в первой же строке!");
             commandsData.setPhrase("Проблема с загрузкой скрипта из файла в первой же строке!" + commandsData.getParameter());
             commandsData.setCommandEnded(true);
-            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+//            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+            answersWaitingSending.add(dataPacket);
             return;
         }
 
@@ -71,7 +76,7 @@ public class ExecuteScriptCommandRealization {
                         else {
 //                            System.out.println("Start new command");
 //                            System.out.println(line);
-                            cc.processingAndStartScriptCommand(commandsData, bufferedReader, datagramChannel, command);
+                            cc.processingAndStartScriptCommand(dataPacket, bufferedReader, answersWaitingSending, command);
                         }
                     }
                 }
@@ -83,7 +88,8 @@ public class ExecuteScriptCommandRealization {
 //                System.out.println("Проблема с загрузкой скрипта из файла. Хотя несколько строк уже было прочитано!");
                 commandsData.setPhrase("Проблема с загрузкой скрипта из файла. Хотя несколько строк уже было прочитано!" + commandsData.getParameter());
                 commandsData.setCommandEnded(true);
-                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+//                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+                answersWaitingSending.add(dataPacket);
                 return;
             }
         }
@@ -95,7 +101,8 @@ public class ExecuteScriptCommandRealization {
             System.out.println("Скрипт завершён!");
             commandsData.setPhrase("Скрипт завершён!");
             commandsData.setCommandEnded(true);
-            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+//            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+            answersWaitingSending.add(dataPacket);
 //            DataBlock dataBlock = new DataBlock();
 //            dataBlock.setPhrase("Скрипт завершён!");
 //            dataBlock.setAllRight(true);

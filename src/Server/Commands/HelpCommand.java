@@ -2,10 +2,12 @@ package Server.Commands;
 
 import CommonClasses.CommandsData;
 //import CommonClasses.DataBlock;
+import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 import Server.TransferCenter;
 
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class HelpCommand implements Command {
     @Override
@@ -14,7 +16,7 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public void execute(DatagramChannel datagramChannel, CommandsData commandsData)
+    public void execute(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket)
     {
 //         dataBlock = new DataBlock();
 
@@ -37,10 +39,12 @@ public class HelpCommand implements Command {
         phrase += ((new FilterLessThanTransportCommand(new FlatCollection())).toString()) + "\n";
         phrase += ((new PrintFieldAscendingNumberOfRoomsCommand(new FlatCollection())).toString()) + "\n";
 
+        CommandsData commandsData = dataPacket.getCommandsData();
         commandsData.setPhrase(phrase);
         commandsData.setCommandEnded(true);
 //        System.out.println(phrase);
-        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+//        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
+        answersWaitingSending.add(dataPacket);
 //        dataBlock.setAllRight(true);
 //        transferCenter.sendObjectToUser(dataBlock);
     }

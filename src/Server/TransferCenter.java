@@ -14,6 +14,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class TransferCenter {
 
@@ -23,11 +24,16 @@ public class TransferCenter {
     DatagramChannel mainServerDatagramChannel;
     WorkWithUser workWithUser;
 
+    ConcurrentLinkedQueue<DataPacket> requestsWaitingProcessing = new ConcurrentLinkedQueue<>();
+    ConcurrentLinkedQueue<DataPacket> answersWaitingSending = new ConcurrentLinkedQueue<>();
+    ExecutorService service = Executors.newCachedThreadPool();
+
+
     private final static int SIZEOFBUFFER = 500;
 
     public TransferCenter(WorkWithUser workWithUser){
         this.workWithUser = workWithUser;
-//        this.workWithUser.setTransferCenter(this);
+
         System.out.println("Введите 0, если хотите автоматически создать сервер или 1, если хотите привязать его к определённому порту:");
         if(Integer.valueOf(new Scanner(System.in).nextLine()).equals(1)){
             System.out.println("Ведите порт:");
@@ -47,28 +53,6 @@ public class TransferCenter {
         connectionRequestsChecker.start();
     }
 
-//    public static DatagramChannel createNewChannelWithoutIP() {
-//        Random random = new Random();
-//        DatagramChannel datagramChannel = null;
-//        try {
-//            datagramChannel = DatagramChannel.open();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        int port = -1;
-//
-//        boolean workingPort = false;
-//        while (!workingPort) {
-//            port = random.nextInt(65535);
-//
-//            try {
-//                datagramChannel.bind(new InetSocketAddress(port));
-//                workingPort = true;
-//            } catch (IOException e) { }
-//        }
-//        return datagramChannel;
-//    }
 
     public static DatagramChannel createNewChannelWithIP() {
         Random random = new Random();
@@ -116,70 +100,115 @@ public class TransferCenter {
         System.out.println("IP сервера: " + mainServerDatagramChannel.socket().getLocalAddress().getHostAddress()+ "\nPort сервера: " + mainServerDatagramChannel.socket().getLocalPort() + "\n");
     }
 
-    /**Processing requests from different users and started work with them*/
-    public void requestsProcessing(){
-        while (true){
+//    /**Processing requests from different users and started work with them*/
+//    public void requestsProcessing(){
+//        while (true){
+//
+//
 //            try {
-//                Thread.sleep(3000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            try {
-//                System.out.println("kkk " + selector.selectNow());
-//                System.out.println("kkk " + selector.selectNow());
+//                if(selector.selectNow() == 0){
+//                    continue;
+//                }
+//
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
+//            Set<SelectionKey> selectionKeys = selector.selectedKeys();
+//            Iterator iterator = selectionKeys.iterator();
+//
+//            while (iterator.hasNext()){
+//                SelectionKey selectionKey = (SelectionKey) iterator.next();
+//                iterator.remove();
+//
+//                Object obj = null;
+//                DatagramChannel selectedDatagramChannel = null;
+//                try {
+//                    selectedDatagramChannel = DatagramChannel.open();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                try {
+//                    DatagramChannel datagramChannel = (DatagramChannel) selectionKey.channel();
+//                    obj = receiveObject(datagramChannel);
+//
+//                    selectedDatagramChannel.connect(((DatagramChannel) selectionKey.channel()).getRemoteAddress());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                CommandsData commandsData = null;
+//                DataBlock dataBlock = (DataBlock) obj;
+//                commandsData = dataBlock.getCommandsData();
+//                TransferCenter.copyFieldsFromTo(dataBlock, commandsData);
+//
+//                workWithUser.startWorkWithUser(selectedDatagramChannel, commandsData);
+//            }
+//        }
+//    }
+
+
+//    Ключи, обработка которых уже ведётся в другом потоке
+    Stack<SelectionKey> processingSelectionKeys = new Stack<>();
+    /**Processing requests from different users and started work with them*/
+    public void requestsProcessing(){
+        while (true){
 
             try {
-                if(selector.selectNow() == 0){
-//                    System.out.println("0");
-                    continue;
+                if(selector.selectNow()!=0){
+                    Set<SelectionKey> selectionKeys = selector.selectedKeys();
+                    Iterator iterator = selectionKeys.iterator();
+                    while (iterator.hasNext()){
+                        SelectionKey selectionKey = (SelectionKey) iterator.next();
+                        iterator.remove();
+
+                        Iterator OSKiterator = processingSelectionKeys.iterator();
+                        boolean keyAlreadyInProcessing = false;
+
+//                        Проверка не был ли этот ключ уже запущен в обработку.
+//                        Необходима, тк из-за разницы скорости выполнения потоков может запустиься один и тот же запрос несколько раз
+                        while (OSKiterator.hasNext()){
+                            if(selectionKey.equals(OSKiterator.next())){
+                                keyAlreadyInProcessing = true;
+                                break;
+                            }
+                        }
+
+
+                        if(!keyAlreadyInProcessing){
+                            ReadRequestThread readRequestThread = new ReadRequestThread(selectionKey, requestsWaitingProcessing, SIZEOFBUFFER, processingSelectionKeys);
+                            service.execute(readRequestThread);
+                            processingSelectionKeys.add(selectionKey);
+                        }
+
+                    }
                 }
-//                else {
-////                    System.out.println("1");
-//                }
-            } catch (IOException e) {
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            Set<SelectionKey> selectionKeys = selector.selectedKeys();
-            Iterator iterator = selectionKeys.iterator();
 
-            while (iterator.hasNext()){
-                SelectionKey selectionKey = (SelectionKey) iterator.next();
-                iterator.remove();
-
-                Object obj = null;
-                DatagramChannel selectedDatagramChannel = null;
-                try {
-                    selectedDatagramChannel = DatagramChannel.open();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-//                    selectedDatagramChannel = ((DatagramChannel)selectionKey.channel());
-//                    ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[10000]);
-//                    selectedDatagramChannel.receive(byteBuffer);
-//                    obj = ObjectProcessing.deSerializeObject(byteBuffer.array());
-//                    System.out.println(obj.getClass().getName());
-
-                    DatagramChannel datagramChannel = (DatagramChannel) selectionKey.channel();
-                    obj = receiveObject(datagramChannel);
-
-                    selectedDatagramChannel.connect(((DatagramChannel) selectionKey.channel()).getRemoteAddress());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                CommandsData commandsData = null;
-                DataBlock dataBlock = (DataBlock) obj;
-                commandsData = dataBlock.getCommandsData();
-                TransferCenter.copyFieldsFromTo(dataBlock, commandsData);
-
-                workWithUser.startWorkWithUser(selectedDatagramChannel, commandsData);
+            while (!requestsWaitingProcessing.isEmpty()){
+                ProcessingRequestThread processingRequestThread = new ProcessingRequestThread(answersWaitingSending, requestsWaitingProcessing.poll(),workWithUser);
+                processingRequestThread.fork();
             }
+
+            while (!answersWaitingSending.isEmpty()){
+                DataPacket dataPacket = answersWaitingSending.poll();
+                service.execute(new SendingAnswerThread(dataPacket));
+//                sendAnswerToUser(dataPacket.getDatagramChannel(), dataPacket.getCommandsData());
+            }
+
+//            while (!requestsWaitingProcessing.isEmpty()){
+//                try {
+////                    workWithUser.startWorkWithUser(requestsWaitingProcessing.poll());
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
         }
     }
+
+
 
     public static Object receiveObject(DatagramChannel datagramChannel) throws IOException {
 
@@ -210,46 +239,10 @@ public class TransferCenter {
 
             }catch (Exception e){}
         }
-
-
-//        boolean endOfReceive = false;
-//        byte[] byteObj = new byte[0];
-//        Object obj = null;
-//        while (!endOfReceive){
-//            byte[] receivedArr = receiveByteArr((DatagramChannel) selectionKey.channel());
-//            byte[] bytes = new byte[byteObj.length + receivedArr.length];
-//
-//            for(int i =0;i<byteObj.length + receivedArr.length;i++){
-//                if(i<byteObj.length){
-//                    bytes[i] = byteObj[i];
-//                }
-//                else {
-//                    bytes[i] = receivedArr[i-byteObj.length];
-//                }
-//            }
-//            byteObj = bytes;
-//            boolean hasNewPortion = false;
-//            if(selector.selectNow() != 0){
-//                Set set = selector.selectedKeys();
-//                Iterator iterator = set.iterator();
-//                while (iterator.hasNext()){
-//                    if(iterator.next().equals(selectionKey)){
-//                        hasNewPortion = true;
-//                    }
-//                }
-//            }
-//            if(!hasNewPortion){
-//                obj = ObjectProcessing.deSerializeObject(byteObj);
-//                endOfReceive = true;
-//            }
-//            if(obj == null){
-//                hasNewPortion = true;
-//            }
-//        }
         return obj;
     }
 
-    private static byte[] receiveByteArr(DatagramChannel datagramChannel) {
+    public static byte[] receiveByteArr(DatagramChannel datagramChannel) {
         final int size = SIZEOFBUFFER;
         ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[size]);
         byte[] bytes = null;
@@ -278,7 +271,7 @@ public class TransferCenter {
 
     }
 
-    private static void copyFieldsFromTo(DataBlock dataBlock, CommandsData commandsData){
+    public static void copyFieldsFromTo(DataBlock dataBlock, CommandsData commandsData){
         commandsData.setCommandWithElementParameter(dataBlock.isCommandWithElementParameter());
         commandsData.setCreator(dataBlock.getCreator());
         commandsData.setParameter(dataBlock.getParameter());

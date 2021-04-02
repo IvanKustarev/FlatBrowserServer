@@ -5,6 +5,7 @@ import CommonClasses.CommandsData;
 import CommonClasses.Creator;
 //import CommonClasses.DataBlock;
 import Server.Commands.*;
+import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 import Server.TransferCenter;
 
@@ -16,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.channels.DatagramChannel;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**Класс, который создаётся в user и script и управляет работой команд*/
 public class CommandCenter {
@@ -37,24 +39,7 @@ public class CommandCenter {
     ShowCommand showCommand;
     SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand;
     UpdateIdCommand updateIdCommand;
-//
-//    AddCommand addCommand = new AddCommand(flatCollection);
-//    AddIfMinCommand addIfMinCommand = new AddIfMinCommand(flatCollection);
-//    ClearCommand clearCommand = new ClearCommand(flatCollection);
-//    //    ExecuteScriptCommand executeScriptCommand;
-//    FilterLessThanTransportCommand filterLessThanTransportCommand = new FilterLessThanTransportCommand(flatCollection);
-//    HelpCommand helpCommand = new HelpCommand();
-//    InfoCommand infoCommand = new InfoCommand(flatCollection);
-//    PrintFieldAscendingNumberOfRoomsCommand printFieldAscendingNumberOfRoomsCommand = new PrintFieldAscendingNumberOfRoomsCommand(flatCollection);
-//    RemoveByIdCommand removeByIdCommand = new RemoveByIdCommand(flatCollection);
-//    RemoveHeadCommand removeHeadCommand = new RemoveHeadCommand(flatCollection);
-//    RemoveLowerCommand removeLowerCommand = new RemoveLowerCommand(flatCollection);
 
-
-//    SaveCommand saveCommand;
-//    ShowCommand showCommand = new ShowCommand(flatCollection);
-//    SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand = new SumOfNumberOfRoomsCommand(flatCollection);
-//    UpdateIdCommand updateIdCommand = new UpdateIdCommand(flatCollection);
 
     public CommandCenter(String fileAddress, AddCommand addCommand, AddIfMinCommand addIfMinCommand, ClearCommand clearCommand, ExecuteScriptCommand executeScriptCommand, FilterLessThanTransportCommand filterLessThanTransportCommand, HelpCommand helpCommand, InfoCommand infoCommand, PrintFieldAscendingNumberOfRoomsCommand printFieldAscendingNumberOfRoomsCommand, RemoveByIdCommand removeByIdCommand, RemoveHeadCommand removeHeadCommand, RemoveLowerCommand removeLowerCommand, /*SaveCommand saveCommand,*/ ShowCommand showCommand, SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand, UpdateIdCommand updateId) {
         this.fileAddress = fileAddress;
@@ -75,64 +60,61 @@ public class CommandCenter {
         this.updateIdCommand = updateId;
     }
 
-    public void add(DatagramChannel datagramChannel, CommandsData commandsData){
-        addCommand.execute(datagramChannel, commandsData);
+    public void add(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        addCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void addIfMin(DatagramChannel datagramChannel, CommandsData commandsData){
-        addIfMinCommand.execute(datagramChannel, commandsData);
+    public void addIfMin(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        addIfMinCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void clear(DatagramChannel datagramChannel, CommandsData commandsData){
-        clearCommand.execute(datagramChannel, commandsData);
+    public void clear(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        clearCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void filterLessThanTransport(DatagramChannel datagramChannel, CommandsData commandsData){
-        filterLessThanTransportCommand.execute(datagramChannel, commandsData);
+    public void filterLessThanTransport(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        filterLessThanTransportCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void executeScript(DatagramChannel datagramChannel, CommandsData commandsData){
-        executeScriptCommand.execute(datagramChannel, commandsData);
+    public void executeScript(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        executeScriptCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void help(DatagramChannel datagramChannel, CommandsData commandsData){
-        helpCommand.execute(datagramChannel, commandsData);
+    public void help(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        helpCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void info(DatagramChannel datagramChannel, CommandsData commandsData){
-        infoCommand.execute(datagramChannel, commandsData);
+    public void info(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        infoCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void printFieldAscendingNumberOfRooms(DatagramChannel datagramChannel, CommandsData commandsData){
-        printFieldAscendingNumberOfRoomsCommand.execute(datagramChannel, commandsData);
+    public void printFieldAscendingNumberOfRooms(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        printFieldAscendingNumberOfRoomsCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void removeById(DatagramChannel datagramChannel, CommandsData commandsData){
-        removeByIdCommand.execute(datagramChannel, commandsData);
+    public void removeById(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        removeByIdCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void removeHead(DatagramChannel datagramChannel, CommandsData commandsData){
-        removeHeadCommand.execute(datagramChannel, commandsData);
+    public void removeHead(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        removeHeadCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void removeLower(DatagramChannel datagramChannel, CommandsData commandsData){
-        removeLowerCommand.execute(datagramChannel, commandsData);
+    public void removeLower(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        removeLowerCommand.execute(answersWaitingSending, dataPacket);
     }
 
-//    public void save(CommandsData command, TransferCenter transferCenter, CommandsData commandsData){
-//        saveCommand.execute(command, transferCenter, commandsData);
-//    }
 
-    public void show(DatagramChannel datagramChannel, CommandsData commandsData){
-        showCommand.execute(datagramChannel, commandsData);
+    public void show(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        showCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void sumOfNumberOfRooms(DatagramChannel datagramChannel, CommandsData commandsData){
-        sumOfNumberOfRoomsCommand.execute(datagramChannel, commandsData);
+    public void sumOfNumberOfRooms(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        sumOfNumberOfRoomsCommand.execute(answersWaitingSending, dataPacket);
     }
 
-    public void update(DatagramChannel datagramChannel, CommandsData commandsData){
-        updateIdCommand.execute(datagramChannel, commandsData);
+    public void update(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        updateIdCommand.execute(answersWaitingSending, dataPacket);
     }
 
 
@@ -167,9 +149,6 @@ public class CommandCenter {
             }
         }
 
-//        System.out.println("====================");
-//        commandObject.getFlat().show();
-//        System.out.println("====================");
 
         commandObject.setCreator(creator);
 
@@ -223,7 +202,8 @@ public class CommandCenter {
 //        startCommand(userCommand);
 //    }
 
-    public void processingAndStartUserCommand(CommandsData commandsData, DatagramChannel datagramChannel){
+    public void processingAndStartUserCommand(DataPacket dataPacket, ConcurrentLinkedQueue<DataPacket> answersWaitingSending){
+        CommandsData commandsData = dataPacket.getCommandsData();
 //        CommandsData userCommand = packingCommandInCommandsObject(commandsData.toString() + " " + commandsData.getParameter(), isCommandWithParameter(commandsData.toString() + commandsData.getParameter()), Creator.USER);
         if(commandsData.equals(CommandsData.EXECUTESCRIPT)){
             //дополнительные параметры для этой команды
@@ -240,12 +220,13 @@ public class CommandCenter {
                 System.out.println("Проблемы с загрузкой файла со скриптом!");
             }
         }
-        startCommand(/*userCommand,*/ datagramChannel, commandsData);
+        startCommand(answersWaitingSending, dataPacket);
     }
 
 //    /**запуск команды осуществляемый user-ом*/
     public void processingAndStartScriptCommand(/*String command, CommandsData commandsData, BufferedReader bufferedReader, TransferCenter transferCenter, CommandsData otherCommandsData*/
-    CommandsData commandsData, BufferedReader bufferedReader, DatagramChannel datagramChannel, String command/*TransferCenter transferCenter,*/){
+    DataPacket dataPacket, BufferedReader bufferedReader, ConcurrentLinkedQueue<DataPacket> answersWaitingSending, String command/*TransferCenter transferCenter,*/){
+        CommandsData commandsData = dataPacket.getCommandsData();
         CommandsData scriptCommand = packingCommandInCommandsObject(command, isCommandWithParameter(command), Creator.SCRIPT, commandsData);
 //        System.out.println(scriptCommand.name());
         boolean recursWasStarted = false;
@@ -275,7 +256,10 @@ public class CommandCenter {
 //            transferCenter.sendObjectToUser(dataBlock);
             scriptCommand.setCommandEnded(false);
             scriptCommand.setPhrase("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
-            TransferCenter.sendAnswerToUser(datagramChannel, scriptCommand);
+//            TransferCenter.sendAnswerToUser(answersWaitingSending, scriptCommand);
+//            DataPacket dataPacket = new DataPacket();
+            dataPacket = new DataPacket(dataPacket.getDatagramChannel(), scriptCommand);
+            answersWaitingSending.add(dataPacket);
 
 //            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
         }
@@ -285,12 +269,13 @@ public class CommandCenter {
             }
 //            System.out.println(scriptCommand.name());
 //            System.out.println(scriptCommand.getCreator());
-            startCommand(/*scriptCommand, transferCenter, otherCommandsData*/ datagramChannel, scriptCommand);
+            startCommand(/*scriptCommand, transferCenter, otherCommandsData*/ answersWaitingSending, dataPacket);
         }
     }
 
     /**получает уже запакованную со всеми параметрами команду и запускает её*/
-    public void startCommand(/*CommandsData commandObject, TransferCenter transferCenter,*/DatagramChannel datagramChannel, CommandsData commandsData){
+    public void startCommand(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        CommandsData commandsData = dataPacket.getCommandsData();
         String commandName = gettingNormalFormatOfName(commandsData.toString());
 //        System.out.println(commandName);
 
@@ -298,26 +283,17 @@ public class CommandCenter {
         for (Method method : methods){
             if(method.getName().equals(commandName)){
                 if(commandName.equals("executeScript")){
-                    executeScript(/*commandObject, transferCenter,*/datagramChannel, commandsData);
+                    executeScript(answersWaitingSending, dataPacket);
                 }
                 else {
                     try {
-                        method.invoke(this, /*commandObject, transferCenter,*/datagramChannel, commandsData);
+                        method.invoke(this, answersWaitingSending, dataPacket);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     } catch (InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }
-
-//                try {
-//                    method.invoke(this, commandObject, transferCenter, commandsData);
-//                } catch (IllegalAccessException e) {
-//                    e.printStackTrace();
-//                } catch (InvocationTargetException e) {
-//                    e.printStackTrace();
-//                }
-
             }
         }
     }

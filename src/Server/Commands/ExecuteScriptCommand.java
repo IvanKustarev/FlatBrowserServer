@@ -6,11 +6,13 @@ package Server.Commands;
 import CommonClasses.CommandsData;
 //import L6Server.CommandUnits.ExecuteScriptCommandRealization;
 import Server.CommandUnits.ExecuteScriptCommandRealization;
+import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class ExecuteScriptCommand{
+public class ExecuteScriptCommand implements Command{
 
     FlatCollection flatCollection;
     String fileAddress; //адресс файла для сохранения коллекции
@@ -27,7 +29,7 @@ public class ExecuteScriptCommand{
 
 
 
-    public void execute(DatagramChannel datagramChannel, CommandsData commandsData) {
-        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, commandsData, datagramChannel);
+    public void execute(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket) {
+        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, answersWaitingSending, dataPacket);
     }
 }

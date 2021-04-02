@@ -1,6 +1,7 @@
 package Server;//import L5.L6Server.InputeOutputeWork.LoadingCollectionFromFile;
 //import CommonClasses.ConnectionSupport.ConnectionSupporter;
 //import CommonClasses.DataBlock;
+import Server.BDWork.Connector;
 import Server.FlatCollectionWorkers.FlatCollection;
 import Server.OptionalThrows.ServerCommands;
 import Server.InputeOutputeWork.*;
@@ -12,6 +13,7 @@ import java.io.FileInputStream;
         import java.io.IOException;
 import java.net.*;
         import java.util.Scanner;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -38,16 +40,24 @@ public class Main {
     /**метод отвечает за создание нового пользователя, запуск методов отвечающих за загрузку файла из памяти и запуск метода, получения команды*/
     public static void main(String[] args) throws ParserConfigurationException, IOException, ClassNotFoundException {
 
-        try {
-            LOGGER.log(Level.INFO, "Начало работы программы. Загружаем файл из памяти.");
-            loadFile(); //      Загружаем файл из пямяти в коллекцию
-        }catch (Exception e){
-            LOGGER.log(Level.WARNING, "Ошибка при загрузке файла в коллекцию.");
-            System.exit(1);
-        }
+//        try {
+//            LOGGER.log(Level.INFO, "Начало работы программы. Загружаем файл из памяти.");
+////            loadFile(); //      Загружаем файл из пямяти в коллекцию
+//        }catch (Exception e){
+//            LOGGER.log(Level.WARNING, "Ошибка при загрузке файла в коллекцию.");
+//            System.exit(1);
+//        }
 
+//        Connector connector = new Connector();
+//        connector.connect();
+
+
+
+
+//        =======================================================
         WorkWithUser workWithUser;
         TransferCenter transferCenter = null;
+//        ConcurrentLinkedQueue<DataPacket> answersWaitingSending = new ConcurrentLinkedQueue<>();
         try {
             LOGGER.log(Level.INFO, "Создание workWithUser и Transfer center");
             workWithUser = new WorkWithUser(flatCollection, fileAddress);
@@ -84,13 +94,13 @@ public class Main {
 //    }
 
 
-    private static void loadFile() throws ParserConfigurationException {
-        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
-//        flatCollection = input.convert(startLoading());
+//    private static void loadFile() throws ParserConfigurationException {
 //        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
-//        return input.load(fileAddress);
-        flatCollection = input.convert(input.load(fileAddress));
-    }
+////        flatCollection = input.convert(startLoading());
+////        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
+////        return input.load(fileAddress);
+//        flatCollection = input.convert(input.load(fileAddress));
+//    }
 
     public static String gettingAddress(String[] args){
 
