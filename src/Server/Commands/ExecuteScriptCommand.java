@@ -3,22 +3,23 @@ package Server.Commands;
 //import L5.ExecuteScriptCommandRealization;
 //import L5.FlatCollection;
 
-import CommonClasses.CommandsData;
 //import L6Server.CommandUnits.ExecuteScriptCommandRealization;
+import Server.DBWork.DBWorking;
 import Server.CommandUnits.ExecuteScriptCommandRealization;
 import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 
-import java.nio.channels.DatagramChannel;
-import java.util.concurrent.ConcurrentLinkedQueue;
+        import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ExecuteScriptCommand implements Command{
 
     FlatCollection flatCollection;
     String fileAddress; //адресс файла для сохранения коллекции
-    public ExecuteScriptCommand(FlatCollection flatCollection, String fileAddress){
+    DBWorking dbWorking;
+    public ExecuteScriptCommand(FlatCollection flatCollection, String fileAddress, DBWorking dbWorking){
         this.flatCollection = flatCollection;
         this.fileAddress = fileAddress;
+        this.dbWorking = dbWorking;
     }
 
     @Override
@@ -30,6 +31,6 @@ public class ExecuteScriptCommand implements Command{
 
 
     public void execute(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket) {
-        (new ExecuteScriptCommandRealization()).startScript(flatCollection, fileAddress, answersWaitingSending, dataPacket);
+        (new ExecuteScriptCommandRealization(dbWorking)).startScript(flatCollection, fileAddress, answersWaitingSending, dataPacket);
     }
 }

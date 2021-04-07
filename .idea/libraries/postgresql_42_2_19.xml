@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="postgresql-42.2.19">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/Server/BDWork/postgresql-42.2.19.jar!/" />
+      <root url="jar://$PROJECT_DIR$/postgresql-42.2.19.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

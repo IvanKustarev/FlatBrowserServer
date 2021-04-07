@@ -1,4 +1,7 @@
-package Server;
+package Server.MainModulsThreads;
+
+import Server.DataPacket;
+import Server.WorkWithUser;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinTask;

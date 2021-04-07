@@ -7,6 +7,8 @@ import java.util.Stack;
 public class DataBlock implements Serializable {
     static final long serialVersionUID = 1;
 
+    private User user;
+
     private CommandsData commandsData = null;
 
     public void setCommandsData(CommandsData commandsData) {
@@ -156,5 +158,14 @@ public class DataBlock implements Serializable {
 
     public Flat[] getFlats() {
         return flats;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

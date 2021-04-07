@@ -1,7 +1,9 @@
-package Server;
+package Server.MainModulsThreads;
 
 import CommonClasses.CommandsData;
 import CommonClasses.DataBlock;
+import Server.DataPacket;
+import Server.TransferCenter;
 
 import java.io.BufferedReader;
 import java.io.IOException;

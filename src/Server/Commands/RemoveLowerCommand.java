@@ -1,6 +1,7 @@
 package Server.Commands;
 
 import CommonClasses.CommandsData;
+import Server.DBWork.DBWorking;
 import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 
@@ -10,8 +11,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class RemoveLowerCommand implements Command{
 
     FlatCollection flatCollection;
-    public RemoveLowerCommand(FlatCollection flatCollection){
+    DBWorking dbWorking;
+    public RemoveLowerCommand(FlatCollection flatCollection, DBWorking dbWorking){
         this.flatCollection = flatCollection;
+        this.dbWorking = dbWorking;
     }
 
     @Override

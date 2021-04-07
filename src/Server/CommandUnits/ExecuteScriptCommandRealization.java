@@ -6,13 +6,12 @@ package Server.CommandUnits;
 import CommonClasses.CommandsData;
 //import CommonClasses.DataBlock;
 import CommonClasses.Creator;
+import Server.DBWork.DBWorking;
 import Server.Commands.*;
 import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
-import Server.TransferCenter;
 
 import java.io.*;
-import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**новый объект этого класса создаётся, когда вводится команда execute_script. Аналогичен по работе user-у, но поток ввода меняется на поток из файла
@@ -21,13 +20,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class ExecuteScriptCommandRealization {
 
+    DBWorking dbWorking;
+
+    public ExecuteScriptCommandRealization(DBWorking dbWorking){
+        this.dbWorking = dbWorking;
+    }
+
     /**метод запускаемый при вводе команды execute_script*/
     public void startScript(FlatCollection flatCollection, String fileAddress, ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+//        System.out.println("t");
         CommandsData commandsData = dataPacket.getCommandsData();
-        CommandCenter cc = new CommandCenter(fileAddress, new AddCommand(flatCollection), new AddIfMinCommand(flatCollection), new ClearCommand(flatCollection), new ExecuteScriptCommand(flatCollection, fileAddress),
-                new FilterLessThanTransportCommand(flatCollection), new HelpCommand(), new InfoCommand(flatCollection), new PrintFieldAscendingNumberOfRoomsCommand(flatCollection),
-                new RemoveByIdCommand(flatCollection), new RemoveHeadCommand(flatCollection), new RemoveLowerCommand(flatCollection), /*new SaveCommand(flatCollection, fileAddress),*/
-                new ShowCommand(flatCollection), new SumOfNumberOfRoomsCommand(flatCollection), new UpdateIdCommand(flatCollection));
+        CommandCenter cc = new CommandCenter(dbWorking, fileAddress, new AddCommand(flatCollection, dbWorking), new AddIfMinCommand(flatCollection, dbWorking), new ClearCommand(flatCollection, dbWorking), new ExecuteScriptCommand(flatCollection, fileAddress, dbWorking),
+                new FilterLessThanTransportCommand(flatCollection), new HelpCommand(dbWorking), new InfoCommand(flatCollection), new PrintFieldAscendingNumberOfRoomsCommand(flatCollection),
+                new RemoveByIdCommand(flatCollection, dbWorking), new RemoveHeadCommand(flatCollection, dbWorking), new RemoveLowerCommand(flatCollection, dbWorking), /*new SaveCommand(flatCollection, fileAddress),*/
+                new ShowCommand(flatCollection), new SumOfNumberOfRoomsCommand(flatCollection), new UpdateIdCommand(flatCollection, dbWorking));
 
 
         boolean exit = false;
@@ -65,17 +71,19 @@ public class ExecuteScriptCommandRealization {
                 else {
                     CommandsData commandVariation = cc.whatTheCommand(command);
                     if(commandVariation == null){
-                        System.out.println("Такой команды не существует: " + line);
+//                        System.out.println("Такой команды не существует: " + line);
                     }
                     else {
                         if(commandVariation.equals(CommandsData.EXIT)){
 //                            exit = true;
-                            System.out.println("В файле была найдена команда exit. Программа завершается!");
-                            System.exit(0);
+                            commandVariation.setPhrase("В файле была найдена команда exit. Программа завершается!");
+                            commandVariation.setCommandEnded(true);
+                            dataPacket.setCommandsData(commandVariation);
+                            answersWaitingSending.add(dataPacket);
+                            return;
+
                         }
                         else {
-//                            System.out.println("Start new command");
-//                            System.out.println(line);
                             cc.processingAndStartScriptCommand(dataPacket, bufferedReader, answersWaitingSending, command);
                         }
                     }
@@ -98,7 +106,7 @@ public class ExecuteScriptCommandRealization {
 //        System.out.println("end File");
 
         if(commandsData.getOpeningFiles().size() == 0){
-            System.out.println("Скрипт завершён!");
+//            System.out.println("Скрипт завершён!");
             commandsData.setPhrase("Скрипт завершён!");
             commandsData.setCommandEnded(true);
 //            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);

@@ -1,6 +1,7 @@
 package Server.Commands;
 
 import CommonClasses.CommandsData;
+import Server.DBWork.DBWorking;
 import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 
@@ -14,13 +15,15 @@ public class AddIfMinCommand implements Command {
     }
 
     FlatCollection flatCollection;
+    DBWorking dbWorking;
 
-    public AddIfMinCommand(FlatCollection flatCollection){
+    public AddIfMinCommand(FlatCollection flatCollection, DBWorking dbWorking){
         this.flatCollection = flatCollection;
+        this.dbWorking = dbWorking;
     }
 
     @Override
     public void execute(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket) {
-        flatCollection.addIfMin(answersWaitingSending, dataPacket);
+        flatCollection.addIfMin(answersWaitingSending, dataPacket, dbWorking);
     }
 }

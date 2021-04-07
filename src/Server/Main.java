@@ -1,10 +1,12 @@
 package Server;//import L5.L6Server.InputeOutputeWork.LoadingCollectionFromFile;
 //import CommonClasses.ConnectionSupport.ConnectionSupporter;
 //import CommonClasses.DataBlock;
-import Server.BDWork.Connector;
+import CommonClasses.User;
+import Server.DBWork.*;
 import Server.FlatCollectionWorkers.FlatCollection;
 import Server.OptionalThrows.ServerCommands;
 import Server.InputeOutputeWork.*;
+import org.w3c.dom.Document;
 //import L6User.L6User.AnswerToServer;
 
         import javax.xml.parsers.ParserConfigurationException;
@@ -12,8 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
         import java.io.IOException;
 import java.net.*;
-        import java.util.Scanner;
-import java.util.concurrent.*;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -51,16 +52,53 @@ public class Main {
 //        Connector connector = new Connector();
 //        connector.connect();
 
+//        Flat flat =
 
+//        String sql = "INSERT INTO FLATS " +
+//                "(USERNAME,ID,NAME,X_COORDINATE,Y_COORDINATE," +
+//                "CREATION_DATE,AREA,NUMBER_OF_ROOMS,FURNISH," +
+//                "VIEW,TRANSPORT,HOUSE_NAME,HOUSE_NUMBEROFFLOORS," +
+//                "HOUSE_NUMBEROFFLATSONFLOOR,HOUSE_NUMBEROFLIFTS)" +
+//                " VALUES (" + flat.getUserName() +
+//                ", " + flat.getId() + "," + flat.getName() +
+//                ", " + flat.getCoordinates().getX() +
+//                ", " + flat.getCoordinates().getY() +
+//                ", " + flat.getCreationDate().getTime() +
+//                ", " + flat.getArea() + ", " + flat.getNumberOfRooms() +
+//                ", " + flat.getFurnish().name() +
+//                ", " + flat.getView().name() + ", " + flat.getTransport().name()  +
+//                ", " + flat.getHouse().getName() + ", " + flat.getHouse().getNumberOfFloors() +
+//                ", " + flat.getHouse().getNumberOfFlatsOnFloor() +
+//                ", " + flat.getHouse().getNumberOfLifts() + ")";
+//        char[] chars = sql.toCharArray();
+//        for(int i =365;i<380;i++){
+//            System.out.print(chars[i]);
+//        }
+
+//        System.out.println(Long.valueOf(""));
+
+        Class.forName("org.postgresql.Driver");
+
+//        loadFile();
+
+        flatCollection = new FlatCollection();
+        Connector connector = new Connector();
+        DBWorking dbWorking = new DBWorker(flatCollection, connector.getConnection());
+        dbWorking.load();
+
+//        DBsManager dBsManager = new DBsManager();
+//        dBsManager.deleteTable(connector.getConnection(), "FLATS");
+//        dBsManager.createNewFlatTable(connector.getConnection());
 
 
 //        =======================================================
+
         WorkWithUser workWithUser;
         TransferCenter transferCenter = null;
 //        ConcurrentLinkedQueue<DataPacket> answersWaitingSending = new ConcurrentLinkedQueue<>();
         try {
             LOGGER.log(Level.INFO, "Создание workWithUser и Transfer center");
-            workWithUser = new WorkWithUser(flatCollection, fileAddress);
+            workWithUser = new WorkWithUser(flatCollection, fileAddress, dbWorking);
             transferCenter = new TransferCenter(workWithUser);
         }catch (Exception e){
             LOGGER.log(Level.WARNING, "Проблем с созданием workWithUser и Transfer center ", e);
@@ -87,20 +125,20 @@ public class Main {
         serverCommands.start();
     }
 
-//    /**Загружает данные из файла в памяти в объект класса File. Проверяет на наличие ошибок доступа и прав к файлу в памяти*/
-//    public static Document startLoading() throws ParserConfigurationException {
+    /**Загружает данные из файла в памяти в объект класса File. Проверяет на наличие ошибок доступа и прав к файлу в памяти*/
+    public static Document startLoading() throws ParserConfigurationException {
+        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
+        return input.load(fileAddress);
+    }
+
+
+    private static void loadFile() throws ParserConfigurationException {
+        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
+//        flatCollection = input.convert(startLoading());
 //        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
 //        return input.load(fileAddress);
-//    }
-
-
-//    private static void loadFile() throws ParserConfigurationException {
-//        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
-////        flatCollection = input.convert(startLoading());
-////        LoadingCollectionFromFile input = new LoadingCollectionFromFile();
-////        return input.load(fileAddress);
-//        flatCollection = input.convert(input.load(fileAddress));
-//    }
+        flatCollection = input.convert(input.load(fileAddress));
+    }
 
     public static String gettingAddress(String[] args){
 

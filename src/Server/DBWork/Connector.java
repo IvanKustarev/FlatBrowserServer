@@ -1,20 +1,21 @@
-package Server.BDWork;
+package Server.DBWork;
 
 
 //import Server.org.postgresql.ds.common.*;
 
-import org.postgresql.ds.PGSimpleDataSource;
+//import org.postgresql.ds.PGSimpleDataSource;
 
-import javax.sql.ConnectionPoolDataSource;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Connector {
-    Connection connection;
+    private Connection connection;
+//    private Statement statement;
 
-    public void connect(){
+    public Connector(){
+        connect();
+    }
+
+    private Connection connect(){
 
 
 
@@ -36,10 +37,23 @@ public class Connector {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         try {
-            connection = DriverManager.getConnection("localhost", "s309681", "yvr557");
+            connection = DriverManager.getConnection("jdbc:postgresql://pg:5432/studs", "s309681", "yvr557");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        try {
+            connection.setAutoCommit(false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return connection;
+
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 }

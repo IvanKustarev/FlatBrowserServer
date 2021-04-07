@@ -1,19 +1,20 @@
 package Server.Commands;
 
 
-import CommonClasses.CommandsData;
+import Server.DBWork.DBWorking;
 import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 
-import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ClearCommand implements Command {
 
     FlatCollection flatCollection;
+    DBWorking dbWorking;
 
-    public ClearCommand(FlatCollection flatCollection){
+    public ClearCommand(FlatCollection flatCollection, DBWorking dbWorking){
         this.flatCollection = flatCollection;
+        this.dbWorking = dbWorking;
     }
 
     @Override
@@ -23,6 +24,6 @@ public class ClearCommand implements Command {
 
     @Override
     public void execute(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket) {
-        flatCollection.clear(answersWaitingSending, dataPacket);
+        flatCollection.clear(answersWaitingSending, dataPacket, dbWorking);
     };
 }

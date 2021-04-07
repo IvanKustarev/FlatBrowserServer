@@ -5,6 +5,15 @@ import java.io.Serializable;
 import java.util.Stack;
 
 public enum CommandsData implements Serializable {
+    CHECKUSER{
+        @Override
+        public String toString(){
+            return "check_user";
+        }
+        {
+            commandWithElementParameter = false;
+        }
+    },
     HELP {
         @Override
         public String toString(){

@@ -17,16 +17,33 @@ public class ServerCommands extends Thread{
     @Override
     public void run(){
 
+//        Scanner scanner = new Scanner(System.in);
+//        String str;
+//        System.out.println("Введите save или exit:");
+//
+//        while (!exit){
+//            str = scanner.nextLine();
+//            if(str.equals("save")){
+//                System.out.println("Сохраняю коллекцию в файл ...");
+//                flatCollection.save(flatCollection, fileAddress);
+//            }
+//            if(str.equals("exit")){
+//                System.out.println("Сохраняю коллекцию и завершаю работу сервера!");
+//                flatCollection.save(flatCollection, fileAddress);
+//                System.exit(0);
+//            }
+//        }
+
         Scanner scanner = new Scanner(System.in);
         String str;
-        System.out.println("Введите save или exit:");
+        System.out.println("Введите exit если хотите выйти:");
 
         while (!exit){
             str = scanner.nextLine();
-            if(str.equals("save")){
-                System.out.println("Сохраняю коллекцию в файл ...");
-                flatCollection.save(flatCollection, fileAddress);
-            }
+//            if(str.equals("save")){
+//                System.out.println("Сохраняю коллекцию в файл ...");
+//                flatCollection.save(flatCollection, fileAddress);
+//            }
             if(str.equals("exit")){
                 System.out.println("Сохраняю коллекцию и завершаю работу сервера!");
                 flatCollection.save(flatCollection, fileAddress);

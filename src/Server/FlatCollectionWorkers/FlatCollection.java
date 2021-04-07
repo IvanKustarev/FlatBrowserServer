@@ -4,15 +4,14 @@ import CommonClasses.*;
 import CommonClasses.ApartmentDescription.ComparisonOfAttractiveness;
 import CommonClasses.ApartmentDescription.Transport;
 //import L6Server.Commands.CommandsData;
-import Server.Commands.Command;
+import Server.DBWork.AnswerDBWorkerCommands;
+import Server.DBWork.DBWorking;
 import Server.DataPacket;
 import Server.InputeOutputeWork.UpLoadingCollectionToFile;
-import Server.TransferCenter;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.math.BigInteger;
-import java.nio.channels.DatagramChannel;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -63,6 +62,10 @@ public class FlatCollection {
             }
         }
         return Long.valueOf(id);
+    }
+
+    public void clearMemoryCollection(){
+        collectionOfFlats.clear();
     }
 
     public void getInfo(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
@@ -166,12 +169,24 @@ public class FlatCollection {
     }
 
     //рализация команды
-    public void add(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+    public void add(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
+//        System.out.println("add");
         CommandsData commandsData = dataPacket.getCommandsData();
 //        DataBlock dataBlock = new DataBlock();
         if(commandsData.getCreator().equals(Creator.USER)){
-            collectionOfFlats.add(commandsData.getFlat());
-            commandsData.setPhrase("Объект добавлен в коллекцию!");
+//            commandsData.getFlat().show();
+//            System.out.println(dbWorking == null);
+//            System.out.println(dbWorking.pushNewFlat(new Flat()));
+//            dbWorking.pushNewFlat(commandsData.getFlat());
+            if(dbWorking.pushNewFlat(commandsData.getFlat())){
+                collectionOfFlats.add(commandsData.getFlat());
+                commandsData.setPhrase("Объект добавлен в коллекцию!");
+            }
+            else {
+                commandsData.setPhrase("Проблема с загрузкой объекта в базу данных!");
+            }
+//            System.out.println("ttt");
+//            collectionOfFlats.add(commandsData.getFlat());
 //            commandsData.setAllRight(true);
             commandsData.setCommandEnded(true);
 //            transferCenter.sendObjectToUser(dataBlock);
@@ -181,8 +196,16 @@ public class FlatCollection {
         else {
             long flatID = createId();
             Flat flat = FlatCreatorForScript.createFlat(commandsData, flatID);
-            collectionOfFlats.add(flat);
-            commandsData.setPhrase("Объект добавлен в коллекцию!");
+            flat.setUserName(dataPacket.getUser().getLogin());
+            if(dbWorking.pushNewFlat(flat)){
+                collectionOfFlats.add(flat);
+                commandsData.setPhrase("Объект добавлен в коллекцию!");
+            }
+            else {
+                commandsData.setPhrase("Проблема с загрузкой объекта в базу данных!");
+            }
+//            collectionOfFlats.add(flat);
+//            commandsData.setPhrase("Объект добавлен в коллекцию!");
 //            dataBlock.setAllRight(false);
             commandsData.setCommandEnded(false);
 //            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -196,26 +219,36 @@ public class FlatCollection {
         collectionOfFlats.add(flat);
     }
 
-    public void clear(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+    public void clear(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
         CommandsData commandsData = dataPacket.getCommandsData();
 
-        collectionOfFlats.clear();
-//        System.out.println("Коллекция очищена!");
-//        DataBlock dataBlock = new DataBlock();
-        commandsData.setPhrase("Коллекция очищена!");
+        AnswerDBWorkerCommands answerDBWorkerCommands = dbWorking.clearFlats(dataPacket.getUser());
+
+        if(answerDBWorkerCommands.isSuccessfulResult()){
+            clearByUser(dataPacket.getUser());
+            commandsData.setPhrase(answerDBWorkerCommands.getPhrase());
+        }
+        else {
+            commandsData.setPhrase(answerDBWorkerCommands.getPhrase());
+        }
+
         if(commandsData.getCreator().equals(Creator.USER)){
-//            commandsData.setAllRight(true);
             commandsData.setCommandEnded(true);
-//            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
             answersWaitingSending.add(dataPacket);
         }
         else {
-//            commandsData.setAllRight(false);
             commandsData.setCommandEnded(false);
-//            commandsData.sendObjectToUser(dataBlock);
-//            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
             answersWaitingSending.add(dataPacket);
-//            transferCenter.receiveObjectFromUser();
+        }
+    }
+
+    private void clearByUser(User user){
+        Iterator iterator = collectionOfFlats.iterator();
+        while (iterator.hasNext()){
+            Flat flat = (Flat) iterator.next();
+            if(flat.getUserName().equals(user.getLogin())){
+                iterator.remove();
+            }
         }
     }
 
@@ -232,7 +265,7 @@ public class FlatCollection {
         }
     }
 
-    public void removeHead(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+    public void removeHead(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
         CommandsData commandsData = dataPacket.getCommandsData();
         Iterator iterator = collectionOfFlats.iterator();
         Flat flat;
@@ -254,25 +287,36 @@ public class FlatCollection {
             while (iterator.hasNext()){
                 Flat flatFromCollection = (Flat) iterator.next();
                 if(flatFromCollection.getId().equals(flats[0].getId())){
-                    commandsData.setFlats(flatForSending);
-                    commandsData.setUserNeedToShowFlatArr(true);
-                    commandsData.setPhrase("Эллемент удалён!");
-                    if(commandsData.getCreator().equals(Creator.USER)){
-//                        commandsData.setAllRight(true);
-                        commandsData.setCommandEnded(true);
-//                        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
-                        answersWaitingSending.add(dataPacket);
+                    AnswerDBWorkerCommands answerDBWorkerCommands = dbWorking.deleteFlatByID(flatFromCollection.getId(), dataPacket.getUser());
+
+                    if(answerDBWorkerCommands.isSuccessfulResult()){
+                        iterator.remove();
+                        commandsData.setFlats(flatForSending);
+                        commandsData.setUserNeedToShowFlatArr(true);
+                        commandsData.setPhrase("Эллемент удалён!");
+                        if(commandsData.getCreator().equals(Creator.USER)){
+                            commandsData.setCommandEnded(true);
+                            answersWaitingSending.add(dataPacket);
+                        }
+                        else {
+                            commandsData.setCommandEnded(false);
+                            answersWaitingSending.add(dataPacket);
+
+                        }
                     }
                     else {
-//                        commandsData.setAllRight(false);
-                        commandsData.setCommandEnded(false);
-//                        .sendObjectToUser(dataBlock);
-//                        TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
-                        answersWaitingSending.add(dataPacket);
-//                        transferCenter.receiveObjectFromUser();
+                        commandsData.setPhrase(answerDBWorkerCommands.getPhrase());
+                        if(commandsData.getCreator().equals(Creator.USER)){
+                            commandsData.setCommandEnded(true);
+                            answersWaitingSending.add(dataPacket);
+                        }
+                        else {
+                            commandsData.setCommandEnded(false);
+                            answersWaitingSending.add(dataPacket);
+
+                        }
                     }
 
-                    iterator.remove();
                 }
             }
         }
@@ -340,7 +384,7 @@ public class FlatCollection {
         }
     }
 
-    public void addIfMin(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+    public void addIfMin(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
         CommandsData commandsData = dataPacket.getCommandsData();
         Iterator iterator = getIterator();
         long min;
@@ -356,8 +400,14 @@ public class FlatCollection {
 
             Flat newFlat = commandsData.getFlat();
             if(ComparisonOfAttractiveness.compare(newFlat) < min){
-                collectionOfFlats.add(newFlat);
-                commandsData.setPhrase("Добавляем элемент в коллекцию!");
+                if(dbWorking.pushNewFlat(newFlat))
+                {
+                    collectionOfFlats.add(newFlat);
+                    commandsData.setPhrase("Добавляем элемент в коллекцию!");
+                }
+                else{
+                    commandsData.setPhrase("Проблема с загрузкой новой квартиры в базу данных!");
+                }
             }
             else {
                 //НАверное нужно переделать на слишком маленькую
@@ -386,9 +436,10 @@ public class FlatCollection {
 
     }
 
-    public void updateId(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+    public void updateId(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
         CommandsData commandsData = dataPacket.getCommandsData();
 
+        Flat oldFlat = null;
         long id;
         if(commandsData.getCreator().equals(Creator.USER)){
             id = Long.valueOf(commandsData.getParameter());
@@ -399,8 +450,11 @@ public class FlatCollection {
         Iterator iterator = collectionOfFlats.iterator();
         Long flatId = null;
         while (iterator.hasNext()){
-            long foundedFlatId= ((Flat)iterator.next()).getId();
+            Flat flat = (Flat)iterator.next();
+//            long foundedFlatId= ((Flat)iterator.next()).getId();
+            long foundedFlatId = flat.getId();
             if(foundedFlatId == id){
+                oldFlat = flat;
                 flatId = foundedFlatId;
                 iterator.remove();
             }
@@ -436,10 +490,17 @@ public class FlatCollection {
 
                     Flat flat = commandsData.getFlat();
                     flat.setId(id);
-                    collectionOfFlats.add(flat);
+                    if (dbWorking.pushNewFlat(flat)){
+                        collectionOfFlats.add(flat);
+                        commandsData.setPhrase("Элемент успешно обновлён!");
+                    }
+                    else {
+                        commandsData.setPhrase("Проблема с загрузкой обновлённого элемента в базу данных!");
+                        add(oldFlat);
+                    }
 
                     commandsData.setCommandEnded(true);
-                    commandsData.setPhrase("Элемент успешно обновлён!");
+
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                     answersWaitingSending.add(dataPacket);
                 }
@@ -470,23 +531,26 @@ public class FlatCollection {
         }
     }
 
-    public void removeById(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+    public void removeById(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
         CommandsData commandsData = dataPacket.getCommandsData();
         if(commandsData.getCreator().equals(Creator.USER)){
             long id = Long.valueOf(commandsData.getParameter());
-//            DataBlock dataBlock = new DataBlock();
             Iterator iterator = collectionOfFlats.iterator();
             boolean nonElement = true;
             while (iterator.hasNext()){
                 if(((Flat)iterator.next()).getId() == id){
-                    iterator.remove();
-                    nonElement = false;
-                    commandsData.setPhrase("Элемент удалён.");
-//                System.out.println("Элемент удалён.");
-//                    dataBlock.setAllRight(true);
+                    AnswerDBWorkerCommands answerDBWorkerCommands = dbWorking.deleteFlatByID(id, dataPacket.getUser());
+                    if(answerDBWorkerCommands.isSuccessfulResult()){
+                        iterator.remove();
+                        nonElement = false;
+                        commandsData.setPhrase(answerDBWorkerCommands.getPhrase());
+                    }
+                    else {
+                        nonElement = false;
+                        commandsData.setPhrase(answerDBWorkerCommands.getPhrase());
+                    }
+
                     commandsData.setCommandEnded(true);
-//                    transferCenter.sendObjectToUser(dataBlock);
-//                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                     answersWaitingSending.add(dataPacket);
 
                 }

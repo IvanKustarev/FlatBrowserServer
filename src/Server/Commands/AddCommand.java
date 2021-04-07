@@ -1,10 +1,9 @@
 package Server.Commands;
 
-import CommonClasses.CommandsData;
+import Server.DBWork.DBWorking;
 import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
 
-import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AddCommand implements Command {
@@ -14,12 +13,14 @@ public class AddCommand implements Command {
     }
 
     FlatCollection flatCollection;
-    public AddCommand(FlatCollection flatCollection){
+    DBWorking dbWorking;
+    public AddCommand(FlatCollection flatCollection, DBWorking dbWorking){
         this.flatCollection = flatCollection;
+        this.dbWorking = dbWorking;
     }
 
     @Override
     public void execute(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket) {
-        flatCollection.add(answersWaitingSending, dataPacket);
+        flatCollection.add(answersWaitingSending, dataPacket, dbWorking);
     }
 }

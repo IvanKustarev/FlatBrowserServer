@@ -4,10 +4,10 @@ package Server.CommandUnits;
 import CommonClasses.CommandsData;
 import CommonClasses.Creator;
 //import CommonClasses.DataBlock;
+import Server.DBWork.DBWorking;
 import Server.Commands.*;
 import Server.DataPacket;
 import Server.FlatCollectionWorkers.FlatCollection;
-import Server.TransferCenter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.channels.DatagramChannel;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -39,9 +38,11 @@ public class CommandCenter {
     ShowCommand showCommand;
     SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand;
     UpdateIdCommand updateIdCommand;
+    DBWorking dbWorking;
 
 
-    public CommandCenter(String fileAddress, AddCommand addCommand, AddIfMinCommand addIfMinCommand, ClearCommand clearCommand, ExecuteScriptCommand executeScriptCommand, FilterLessThanTransportCommand filterLessThanTransportCommand, HelpCommand helpCommand, InfoCommand infoCommand, PrintFieldAscendingNumberOfRoomsCommand printFieldAscendingNumberOfRoomsCommand, RemoveByIdCommand removeByIdCommand, RemoveHeadCommand removeHeadCommand, RemoveLowerCommand removeLowerCommand, /*SaveCommand saveCommand,*/ ShowCommand showCommand, SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand, UpdateIdCommand updateId) {
+    public CommandCenter(DBWorking dbWorking, String fileAddress, AddCommand addCommand, AddIfMinCommand addIfMinCommand, ClearCommand clearCommand, ExecuteScriptCommand executeScriptCommand, FilterLessThanTransportCommand filterLessThanTransportCommand, HelpCommand helpCommand, InfoCommand infoCommand, PrintFieldAscendingNumberOfRoomsCommand printFieldAscendingNumberOfRoomsCommand, RemoveByIdCommand removeByIdCommand, RemoveHeadCommand removeHeadCommand, RemoveLowerCommand removeLowerCommand, /*SaveCommand saveCommand,*/ ShowCommand showCommand, SumOfNumberOfRoomsCommand sumOfNumberOfRoomsCommand, UpdateIdCommand updateId) {
+        this.dbWorking = dbWorking;
         this.fileAddress = fileAddress;
         this.addCommand = addCommand;
         this.addIfMinCommand = addIfMinCommand;
@@ -68,6 +69,7 @@ public class CommandCenter {
         addIfMinCommand.execute(answersWaitingSending, dataPacket);
     }
 
+//    Необходимо доделать уровень доступа
     public void clear(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
         clearCommand.execute(answersWaitingSending, dataPacket);
     }
@@ -92,6 +94,7 @@ public class CommandCenter {
         printFieldAscendingNumberOfRoomsCommand.execute(answersWaitingSending, dataPacket);
     }
 
+//    Необходимо доделать уровень доступа
     public void removeById(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
         removeByIdCommand.execute(answersWaitingSending, dataPacket);
     }
@@ -258,7 +261,7 @@ public class CommandCenter {
             scriptCommand.setPhrase("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
 //            TransferCenter.sendAnswerToUser(answersWaitingSending, scriptCommand);
 //            DataPacket dataPacket = new DataPacket();
-            dataPacket = new DataPacket(dataPacket.getDatagramChannel(), scriptCommand);
+//            dataPacket = new DataPacket(dataPacket.getDatagramChannel(), scriptCommand, dataPacket.getUser());
             answersWaitingSending.add(dataPacket);
 
 //            System.out.println("Сорри, бро, тут рекурсия, мы прикрываем это лавочку...");
@@ -267,8 +270,7 @@ public class CommandCenter {
             if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
                 scriptCommand.addOpeningFile(scriptCommand.getParameter());
             }
-//            System.out.println(scriptCommand.name());
-//            System.out.println(scriptCommand.getCreator());
+            dataPacket = new DataPacket(dataPacket.getDatagramChannel(), scriptCommand, dataPacket.getUser());
             startCommand(/*scriptCommand, transferCenter, otherCommandsData*/ answersWaitingSending, dataPacket);
         }
     }
@@ -277,7 +279,7 @@ public class CommandCenter {
     public void startCommand(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
         CommandsData commandsData = dataPacket.getCommandsData();
         String commandName = gettingNormalFormatOfName(commandsData.toString());
-//        System.out.println(commandName);
+
 
         Method[] methods = getClass().getDeclaredMethods();
         for (Method method : methods){
