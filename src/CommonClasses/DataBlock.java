@@ -168,4 +168,8 @@ public class DataBlock implements Serializable {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public static DataBlock creteNew(){
+        return new DataBlock();
+    }
 }

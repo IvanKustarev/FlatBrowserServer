@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
         import java.io.IOException;
 import java.net.*;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -82,20 +83,21 @@ public class Main {
 //        loadFile();
 
         flatCollection = new FlatCollection();
-        Connector connector = new Connector();
+        Connector connector = null;
+        try {
+            connector = new Connector();
+        } catch (SQLException throwables) {
+            System.out.println("Проблемы с подключением к базе данных. Завершаем работу!");
+            System.exit(1);
+        }
         DBWorking dbWorking = new DBWorker(flatCollection, connector.getConnection());
         dbWorking.load();
-
-//        DBsManager dBsManager = new DBsManager();
-//        dBsManager.deleteTable(connector.getConnection(), "FLATS");
-//        dBsManager.createNewFlatTable(connector.getConnection());
 
 
 //        =======================================================
 
         WorkWithUser workWithUser;
         TransferCenter transferCenter = null;
-//        ConcurrentLinkedQueue<DataPacket> answersWaitingSending = new ConcurrentLinkedQueue<>();
         try {
             LOGGER.log(Level.INFO, "Создание workWithUser и Transfer center");
             workWithUser = new WorkWithUser(flatCollection, fileAddress, dbWorking);

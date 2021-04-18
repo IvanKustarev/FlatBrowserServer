@@ -25,44 +25,40 @@ public class Flat implements Serializable, Comparable<Flat>{
     private Transport transport; //Поле может быть null
     private House house; //Поле может быть null
 
-    public void show(){
-        System.out.printf("%-30s %s \n", "userName", userName);
-        System.out.printf("%-30s %s \n", "id", id);
-        System.out.printf("%-30s %s \n", "name", name);
-        System.out.println("coordinates:");
-        coordinates.show();
-//        System.out.println("creationDate:\t\t\t\t" + creationDate);
-        System.out.printf("%-30s %s \n", "creationDate", creationDate);
-        System.out.printf("%-30s %s \n", "area", area);
-        System.out.printf("%-30s %s \n", "numberOfRooms", numberOfRooms);
-        System.out.printf("%-30s %s \n", "furnish", furnish.name());
-//        System.out.println("area:\t\t\t\t" + area);
-//        System.out.println("numberOfRooms:\t\t\t\t" + numberOfRooms);
-//        System.out.println("furnish:\t\t\t\t"+furnish.name());
+    public String show(){
+
+        String str = new String();
+
+        str += String.format("%-30s %s \n", "userName", userName);
+        str += String.format("%-30s %s \n", "id", id);
+        str += String.format("%-30s %s \n", "name", name);
+        str += String.format("coordinates:");
+        str += coordinates.show();
+        str += String.format("%-30s %s \n", "creationDate", creationDate);
+        str += String.format("%-30s %s \n", "area", area);
+        str += String.format("%-30s %s \n", "numberOfRooms", numberOfRooms);
+        str += String.format("%-30s %s \n", "furnish", furnish.name());
+
 
 
         try {
-//            System.out.println("view:\t\t\t\t" + view.name());
-            System.out.printf("%-30s %s \n", "view", view.name());
+            str += String.format("%-30s %s \n", "view", view.name());
         }catch (Exception e){
-            System.out.println("view - пустое поле");
+            str += String.format("view - пустое поле");
         }
         try {
-//            System.out.println("transport:\t\t\t\t" + transport.name());
-            System.out.printf("%-30s %s \n", "transport", transport.name());
+            str += String.format("%-30s %s \n", "transport", transport.name());
         }catch (Exception e){
-            System.out.println("transport - пустое поле");
+            str += String.format("transport - пустое поле");
         }
         try {
-            System.out.println("house:");
-            house.getFields();
+            str += String.format("house:");
+            str += house.getFields();
         }catch (Exception e){
-            System.out.println("house - пустое поле");
+            str += String.format("house - пустое поле");
         }
 
-
-
-        System.out.println("\n\n");
+        return str;
     }
 
     public static Flat createFlat(Long id){

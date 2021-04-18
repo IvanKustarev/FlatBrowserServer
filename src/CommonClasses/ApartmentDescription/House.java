@@ -9,13 +9,14 @@ public class House implements Attractive , Serializable {
     private int numberOfFlatsOnFloor; //Значение поля должно быть больше 0
     private long numberOfLifts; //Значение поля должно быть больше 0
 
-    public void getFields(){
-//        System.out.println("house name:\t\t\t\t"+name);
-        System.out.printf("%-30s %s \n", "   house name", name);
-        System.out.printf("%-30s %s \n", "   house year", year);
-        System.out.printf("%-30s %s \n", "   house numberOfFloors", numberOfFloors);
-        System.out.printf("%-30s %s \n", "   house numberOfFlatsOnFloor", numberOfFlatsOnFloor);
-        System.out.printf("%-30s %s \n", "   house numberOfLifts", numberOfLifts);
+    public String getFields(){
+        String str = new String();
+        str += String.format("%-30s %s \n", "   house name", name);
+        str += String.format("%-30s %s \n", "   house year", year);
+        str += String.format("%-30s %s \n", "   house numberOfFloors", numberOfFloors);
+        str += String.format("%-30s %s \n", "   house numberOfFlatsOnFloor", numberOfFlatsOnFloor);
+        str += String.format("%-30s %s \n", "   house numberOfLifts", numberOfLifts);
+        return str;
     }
 
     @Override

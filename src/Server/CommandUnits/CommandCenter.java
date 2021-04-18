@@ -277,6 +277,7 @@ public class CommandCenter {
 
     /**получает уже запакованную со всеми параметрами команду и запускает её*/
     public void startCommand(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+
         CommandsData commandsData = dataPacket.getCommandsData();
         String commandName = gettingNormalFormatOfName(commandsData.toString());
 

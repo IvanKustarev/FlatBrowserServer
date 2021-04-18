@@ -39,13 +39,16 @@ public class WorkWithUser {
     public void startWorkWithUser(DataPacket dataPacket, ConcurrentLinkedQueue<DataPacket> answersWaitingSending){
 
 
+
         if(dataPacket.getCommandsData().equals(CommandsData.CHECKUSER)){
             TransferCenter.sendAnswerToUser(dataPacket.getDatagramChannel(), userAnalysis(dataPacket));
         }
 
+
         CommandsData commandsData = dataPacket.getCommandsData();
 
         dbWorking.load();
+
 
         CommandCenter commandCenter = new CommandCenter(dbWorking, fileAddress, new AddCommand(flatCollection, dbWorking), new AddIfMinCommand(flatCollection, dbWorking), new ClearCommand(flatCollection, dbWorking), new ExecuteScriptCommand(flatCollection, fileAddress, dbWorking),
                 new FilterLessThanTransportCommand(flatCollection), new HelpCommand(dbWorking), new InfoCommand(flatCollection), new PrintFieldAscendingNumberOfRoomsCommand(flatCollection),
@@ -53,13 +56,32 @@ public class WorkWithUser {
                 new ShowCommand(flatCollection), new SumOfNumberOfRoomsCommand(flatCollection), new UpdateIdCommand(flatCollection, dbWorking));
 
         //тк операция выполняется только один раз, то нужды в циклах нет
-        if (commandsData.isCommandWithElementParameter()) {
-            createNullFieldsOfFlat(commandsData.getFlat());
-            commandsData.getFlat().setUserName(dataPacket.getUser().getLogin());
+//        System.out.println(commandsData.isCommandWithElementParameter());
+//        System.out.println("ttt");
+//
+//        boolean commandWithElementParameter = commandsData.isCommandWithElementParameter();
+//        System.out.println(commandWithElementParameter);
+
+        try {
+//            Для проверки на NullPointer
+            commandsData.isCommandWithElementParameter().equals(true);
+
+            if (commandsData.isCommandWithElementParameter()) {
+                createNullFieldsOfFlat(commandsData.getFlat());
+                commandsData.getFlat().setUserName(dataPacket.getUser().getLogin());
+            }
+        }catch (Exception e){
+            commandsData.setCommandWithElementParameter(false);
         }
+
+
+
+
 
         commandsData.setCreator(Creator.USER);
 //        System.out.println(commandsData.name());
+
+
         commandCenter.processingAndStartUserCommand(dataPacket, answersWaitingSending);
     }
 

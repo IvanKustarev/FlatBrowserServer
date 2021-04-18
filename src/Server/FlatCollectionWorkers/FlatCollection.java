@@ -103,6 +103,7 @@ public class FlatCollection {
 
 //        Arrays.stream(setOfFlats.toArray()).toArray();
 
+
         Object[] arr = collectionOfFlats.stream().toArray();
 
         Flat[] flats = new Flat[arr.length];
