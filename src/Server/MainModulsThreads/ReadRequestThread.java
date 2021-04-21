@@ -12,6 +12,8 @@ import java.nio.channels.SelectionKey;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 public class ReadRequestThread implements Runnable{
 
@@ -19,15 +21,20 @@ public class ReadRequestThread implements Runnable{
     ConcurrentLinkedQueue requestsWaitingProcessing = null;
     final int sizeOfBuffer;
     SelectionKey selectionKey = null;
-    Stack openedSelectionKeys = null;
+//    Stack openedSelectionKeys = null;
+    ConcurrentLinkedQueue<SelectionKey> openedSelectionKeys = null;
+    Lock lock;
+    Condition condition;
 
     public ReadRequestThread(
-            SelectionKey selectionKey, ConcurrentLinkedQueue requestsWaitingProcessing, int sizeOfBuffer, Stack openedSelectionKeys){
+            SelectionKey selectionKey, ConcurrentLinkedQueue requestsWaitingProcessing, int sizeOfBuffer, ConcurrentLinkedQueue<SelectionKey> openedSelectionKeys, Lock lock, Condition condition){
         this.selectionKey = selectionKey;
         this.datagramChannel = (DatagramChannel) selectionKey.channel();
         this.requestsWaitingProcessing = requestsWaitingProcessing;
         this.sizeOfBuffer = sizeOfBuffer;
         this.openedSelectionKeys = openedSelectionKeys;
+        this.lock = lock;
+        this.condition = condition;
     }
 
     @Override
@@ -52,7 +59,24 @@ public class ReadRequestThread implements Runnable{
         Iterator iterator = openedSelectionKeys.iterator();
         while (iterator.hasNext()){
             if(iterator.next().equals(selectionKey)){
+
+
+                lock.lock();
+                try {
+//                    System.out.println("wait");
+//                    System.out.println(condition.hashCode());
+                    condition.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 iterator.remove();
+
+                lock.unlock();
+
+
+
+                break;
             }
         }
     }

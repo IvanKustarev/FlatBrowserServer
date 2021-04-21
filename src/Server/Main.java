@@ -42,41 +42,11 @@ public class Main {
     /**метод отвечает за создание нового пользователя, запуск методов отвечающих за загрузку файла из памяти и запуск метода, получения команды*/
     public static void main(String[] args) throws ParserConfigurationException, IOException, ClassNotFoundException {
 
-//        try {
-//            LOGGER.log(Level.INFO, "Начало работы программы. Загружаем файл из памяти.");
-////            loadFile(); //      Загружаем файл из пямяти в коллекцию
-//        }catch (Exception e){
-//            LOGGER.log(Level.WARNING, "Ошибка при загрузке файла в коллекцию.");
-//            System.exit(1);
-//        }
 
-//        Connector connector = new Connector();
-//        connector.connect();
 
-//        Flat flat =
 
-//        String sql = "INSERT INTO FLATS " +
-//                "(USERNAME,ID,NAME,X_COORDINATE,Y_COORDINATE," +
-//                "CREATION_DATE,AREA,NUMBER_OF_ROOMS,FURNISH," +
-//                "VIEW,TRANSPORT,HOUSE_NAME,HOUSE_NUMBEROFFLOORS," +
-//                "HOUSE_NUMBEROFFLATSONFLOOR,HOUSE_NUMBEROFLIFTS)" +
-//                " VALUES (" + flat.getUserName() +
-//                ", " + flat.getId() + "," + flat.getName() +
-//                ", " + flat.getCoordinates().getX() +
-//                ", " + flat.getCoordinates().getY() +
-//                ", " + flat.getCreationDate().getTime() +
-//                ", " + flat.getArea() + ", " + flat.getNumberOfRooms() +
-//                ", " + flat.getFurnish().name() +
-//                ", " + flat.getView().name() + ", " + flat.getTransport().name()  +
-//                ", " + flat.getHouse().getName() + ", " + flat.getHouse().getNumberOfFloors() +
-//                ", " + flat.getHouse().getNumberOfFlatsOnFloor() +
-//                ", " + flat.getHouse().getNumberOfLifts() + ")";
-//        char[] chars = sql.toCharArray();
-//        for(int i =365;i<380;i++){
-//            System.out.print(chars[i]);
-//        }
 
-//        System.out.println(Long.valueOf(""));
+
 
         Class.forName("org.postgresql.Driver");
 

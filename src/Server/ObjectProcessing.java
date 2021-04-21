@@ -98,17 +98,21 @@ public class ObjectProcessing {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(objectByteArr);
 
         ObjectInputStream objectInputStream = null;
-
         try {
             objectInputStream = new ObjectInputStream(inputStream);
         } catch (IOException e) {
             System.out.println("Проблема с созданием ObjectInputStream!");
-            e.printStackTrace();
+//            for (byte b : objectByteArr){
+//                System.out.println(b);
+//            }
+//            e.printStackTrace();
+//            System.exit(1);
         }
 
         Object object = null;
 //        try {
             object = objectInputStream.readObject();
+            objectInputStream.close();
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        } catch (ClassNotFoundException e) {

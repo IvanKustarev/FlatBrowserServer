@@ -18,6 +18,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TransferCenter {
 
@@ -151,63 +154,81 @@ public class TransferCenter {
 
 
 //    Ключи, обработка которых уже ведётся в другом потоке
-    Stack<SelectionKey> processingSelectionKeys = new Stack<>();
+//    Stack<SelectionKey> processingSelectionKeys = new Stack<>();
+    ConcurrentLinkedQueue<SelectionKey> processingSelectionKeys = new ConcurrentLinkedQueue<>();
     /**Processing requests from different users and started work with them*/
     public void requestsProcessing(){
+
+        Lock lock = new ReentrantLock();
+        Condition condition = lock.newCondition();
+
         while (true){
 
             try {
+
+                lock.lock();
                 if(selector.selectNow()!=0){
+
                     Set<SelectionKey> selectionKeys = selector.selectedKeys();
                     Iterator iterator = selectionKeys.iterator();
+//                    System.out.println("Количество выбранных ключей: " + selectionKeys.size());
                     while (iterator.hasNext()){
+//                        System.out.println("Выбрали колюч");
                         SelectionKey selectionKey = (SelectionKey) iterator.next();
                         iterator.remove();
 
+
                         Iterator OSKiterator = processingSelectionKeys.iterator();
                         boolean keyAlreadyInProcessing = false;
+
 
 //                        Проверка не был ли этот ключ уже запущен в обработку.
 //                        Необходима, тк из-за разницы скорости выполнения потоков может запустиься один и тот же запрос несколько раз
                         while (OSKiterator.hasNext()){
                             if(selectionKey.equals(OSKiterator.next())){
                                 keyAlreadyInProcessing = true;
+//                                System.out.println("Ключ уже в обработке");
                                 break;
                             }
                         }
 
 
                         if(!keyAlreadyInProcessing){
-                            ReadRequestThread readRequestThread = new ReadRequestThread(selectionKey, requestsWaitingProcessing, SIZEOFBUFFER, processingSelectionKeys);
-                            service.execute(readRequestThread);
+//                            System.out.println("Перешли к обработке ключа");
                             processingSelectionKeys.add(selectionKey);
+                            ReadRequestThread readRequestThread = new ReadRequestThread(selectionKey, requestsWaitingProcessing, SIZEOFBUFFER, processingSelectionKeys, lock, condition);
+                            service.execute(readRequestThread);
+//                            System.out.println("find");
+//                            System.out.println("Конец итерации цикла");
+
+//                            System.out.println("find" + selectionKey.hashCode());
+//                            System.out.println("processingSelectionKeys is empty :" + processingSelectionKeys.isEmpty());
                         }
 
                     }
                 }
+                condition.signalAll();
+                lock.unlock();
+//                System.out.println("tt");
+//                condition.signalAll();
+//                lock.unlock();
+//                Thread.sleep(500);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             while (!requestsWaitingProcessing.isEmpty()){
+//                System.out.println("process");
                 ProcessingRequestThread processingRequestThread = new ProcessingRequestThread(answersWaitingSending, requestsWaitingProcessing.poll(),workWithUser);
                 processingRequestThread.fork();
             }
 
             while (!answersWaitingSending.isEmpty()){
+//                System.out.println("send");
                 DataPacket dataPacket = answersWaitingSending.poll();
                 service.execute(new SendingAnswerThread(dataPacket));
-//                sendAnswerToUser(dataPacket.getDatagramChannel(), dataPacket.getCommandsData());
             }
-
-//            while (!requestsWaitingProcessing.isEmpty()){
-//                try {
-////                    workWithUser.startWorkWithUser(requestsWaitingProcessing.poll());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
         }
     }
 
@@ -220,9 +241,20 @@ public class TransferCenter {
         boolean endOfReceive = false;
         byte[] objByteArr = new byte[0];
         byte[] receivedArr;
+//        int errCount = 0;
 
         while (!endOfReceive){
             receivedArr = receiveByteArr(datagramChannel);
+
+            boolean onlyNuls = true;
+            for(byte b : receivedArr){
+                if(b != 0){
+                    onlyNuls = false;
+                }
+            }
+            if(onlyNuls){
+                continue;
+            }
             byte[] newArr = new byte[objByteArr.length + receivedArr.length];
 
             for(int i =0;i<(objByteArr.length + receivedArr.length);i++){
@@ -235,6 +267,14 @@ public class TransferCenter {
             }
             objByteArr = newArr;
 
+//            errCount++;
+//            if(errCount >3){
+//                System.out.println("size: " + objByteArr.length);
+//                for(int i = 0; i< objByteArr.length; i++){
+//                    System.out.println(i + " " +objByteArr[i]);
+//                }
+//                System.exit(1);
+//            }
 
             try {
                 obj = ObjectProcessing.deSerializeObject(objByteArr);
@@ -242,6 +282,7 @@ public class TransferCenter {
 
             }catch (Exception e){}
         }
+//        System.out.println("errCount: " + errCount);
         return obj;
     }
 

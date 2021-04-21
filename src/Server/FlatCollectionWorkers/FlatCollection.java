@@ -551,6 +551,7 @@ public class FlatCollection {
                         commandsData.setPhrase(answerDBWorkerCommands.getPhrase());
                     }
 
+//                    commandsData.setPhrase();
                     commandsData.setCommandEnded(true);
                     answersWaitingSending.add(dataPacket);
 
