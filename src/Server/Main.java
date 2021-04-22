@@ -46,8 +46,6 @@ public class Main {
 
 
 
-
-
         Class.forName("org.postgresql.Driver");
 
 //        loadFile();
