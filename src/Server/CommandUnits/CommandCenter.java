@@ -270,7 +270,7 @@ public class CommandCenter {
             if(scriptCommand.equals(CommandsData.EXECUTESCRIPT)){
                 scriptCommand.addOpeningFile(scriptCommand.getParameter());
             }
-            dataPacket = new DataPacket(dataPacket.getDatagramChannel(), scriptCommand, dataPacket.getUser());
+            dataPacket = new DataPacket(dataPacket.getDatagramChannel(), scriptCommand, dataPacket.getUser(), dataPacket.getResourceBundleName());
             startCommand(/*scriptCommand, transferCenter, otherCommandsData*/ answersWaitingSending, dataPacket);
         }
     }

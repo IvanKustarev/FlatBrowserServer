@@ -8,10 +8,12 @@ import Server.DBWork.AnswerDBWorkerCommands;
 import Server.DBWork.DBWorking;
 import Server.DataPacket;
 import Server.InputeOutputeWork.UpLoadingCollectionToFile;
+import Server.Main;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -70,11 +72,13 @@ public class FlatCollection {
 
     public void getInfo(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
 
-//        DataBlock dataBlock = new DataBlock();
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
+        Locale locale = Main.getLocaleByResourceName(dataPacket.getResourceBundleName());
+
         CommandsData commandsData = dataPacket.getCommandsData();
-        commandsData.setPhrase("Тип: " + getClass().getTypeName() + "\n" +
-                "Дата инициализации: " + dateOfInitialization + "\n" +
-                "Количество элементов: " + collectionOfFlats.size());
+        commandsData.setPhrase(resourceBundle.getString("Тип:") + getClass().getTypeName() + "\n" +
+                resourceBundle.getString("Дата инициализации:") + DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale).format(dateOfInitialization) + "\n" +
+                resourceBundle.getString("Количество элементов:") + collectionOfFlats.size());
         if(commandsData.getCreator().equals(Creator.USER)){
             commandsData.setCommandEnded(true);
         }
@@ -144,13 +148,18 @@ public class FlatCollection {
             commandsData.setPhrase("Коллекция пустая!");
             commandsData.setUserNeedToShowFlatArr(false);
         }
-        if(commandsData.getCreator().equals(Creator.USER)){
-            commandsData.setCommandEnded(true);
-        }
-        else {
-            //В executeScriptCommandRealization после выполнения всех команд нужно отправить end
-            //До того момента сервер отправляет сообщения и не получает ответы на них
-            commandsData.setCommandEnded(false);
+        try {
+            if(commandsData.getCreator().equals(Creator.USER)){
+                commandsData.setCommandEnded(true);
+            }
+            else {
+                //В executeScriptCommandRealization после выполнения всех команд нужно отправить end
+                //До того момента сервер отправляет сообщения и не получает ответы на них
+                commandsData.setCommandEnded(false);
+            }
+        }catch (Exception e){
+            System.out.println("Class:FlatCollection Creator = tcommandsData.getCreator()");
+            e.printStackTrace();
         }
 
         answersWaitingSending.add(dataPacket);

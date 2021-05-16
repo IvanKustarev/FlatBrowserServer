@@ -26,24 +26,6 @@ public class ConnectionRequestsChecker extends Thread{
     public void run(){
         ByteBuffer byteBuffer = null;
         while (true){
-//            byte[] bytesFromUser = new byte[0];
-//            SocketAddress userSocketAddress = null;
-//            try {
-////                userSocketAddress = datagramChannel.receive(byteBuffer);
-//                bytesFromUser = TransferCenter.(datagramChannel);
-//            } catch (IOException e) {
-//                System.out.println("Problem with receive!");
-//                e.printStackTrace();
-//            }
-//            byteBuffer = ByteBuffer.wrap(bytesFromUser);
-////            System.out.println();
-//
-//            FirstTimeConnectedData firstTimeConnectedData = null;
-//            try {
-//                firstTimeConnectedData = (FirstTimeConnectedData) ObjectProcessing.deSerializeObject(byteBuffer.array());
-//            } catch (ClassNotFoundException | IOException e) {
-//                e.printStackTrace();
-//            }
 
             FirstTimeConnectedData firstTimeConnectedData = null;
             try {

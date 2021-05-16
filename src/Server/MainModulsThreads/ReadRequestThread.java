@@ -41,12 +41,9 @@ public class ReadRequestThread implements Runnable{
     public void run() {
         try {
             DataBlock dataBlock = (DataBlock) TransferCenter.receiveObject(datagramChannel);
-//            System.out.println(dataBlock.getCommandsData().name());
-//            DatagramChannel channelForAnswer = DatagramChannel.open();
-//            channelForAnswer.connect(datagramChannel.getRemoteAddress());
-//            datagramChannel.connect(datagramChannel.getRemoteAddress());
+//            System.out.println(dataBlock.getResourceBundleName());
             TransferCenter.copyFieldsFromTo(dataBlock, dataBlock.getCommandsData());
-            DataPacket dataPacket = new DataPacket(datagramChannel, dataBlock.getCommandsData(), dataBlock.getUser());
+            DataPacket dataPacket = new DataPacket(datagramChannel, dataBlock.getCommandsData(), dataBlock.getUser(), dataBlock.getResourceBundleName());
             requestsWaitingProcessing.add(dataPacket);
 
 //            requestsWaitingProcessing.add(receiveObject(datagramChannel, requestsWaitingProcessing, sizeOfBuffer));

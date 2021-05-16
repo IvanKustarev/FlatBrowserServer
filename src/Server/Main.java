@@ -15,6 +15,8 @@ import java.io.FileInputStream;
         import java.io.IOException;
 import java.net.*;
 import java.sql.SQLException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -27,6 +29,7 @@ public class Main {
     private static String fileAddress = "NewTest.txt";
     private static boolean isScriptWorkingNow = false;
     private static InetSocketAddress serverSocketAddress = null;
+    private static ResourceBundle[] resourceBundles;
 
     static Logger LOGGER;
     static {
@@ -42,9 +45,7 @@ public class Main {
     /**метод отвечает за создание нового пользователя, запуск методов отвечающих за загрузку файла из памяти и запуск метода, получения команды*/
     public static void main(String[] args) throws ParserConfigurationException, IOException, ClassNotFoundException {
 
-
-
-
+//        createResources();
 
         Class.forName("org.postgresql.Driver");
 
@@ -88,6 +89,37 @@ public class Main {
         }catch (Exception e){
             LOGGER.log(Level.INFO, "Проблема с приёмом пользовательских команд ", e);
         }
+    }
+
+//    private static void createResources(){
+//        ResourceBundle bundleRu = ResourceBundle.getBundle("Resources.Resources_ru", new Locale("ru", "RU"));
+//        ResourceBundle bundleDE = ResourceBundle.getBundle("Resources.Resources_de", new Locale("de", "GR"));
+//
+//        resourceBundles = new ResourceBundle[]{bundleRu, bundleDE};
+//    }
+
+    public static ResourceBundle getResourceByName(String resourceName){
+        if(resourceName != null){
+            if(resourceName.equals("Resources.Resources_ru")){
+                return ResourceBundle.getBundle("Resources.Resources_ru");
+            }
+            if(resourceName.equals("Resources.Resources_de")){
+                return ResourceBundle.getBundle("Resources.Resources_de");
+            }
+        }
+        return ResourceBundle.getBundle("Resources.Resources_ru");
+    }
+
+    public static Locale getLocaleByResourceName(String resourceName){
+        if(resourceName != null) {
+            if (resourceName.equals("Resources.Resources_ru")) {
+                return new Locale("ru", "Ru");
+            }
+            if (resourceName.equals("Resources.Resources_de")) {
+                return new Locale("de", "GR");
+            }
+        }
+        return new Locale("ru", "Ru");
     }
 
     private static void startControllingServerCommands(){

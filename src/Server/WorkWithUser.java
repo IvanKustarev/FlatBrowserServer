@@ -13,9 +13,7 @@ import Server.Commands.*;
 import Server.FlatCollectionWorkers.FlatCollection;
 //import L6Server.Commands.CommandsData;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WorkWithUser {
@@ -43,7 +41,6 @@ public class WorkWithUser {
         if(dataPacket.getCommandsData().equals(CommandsData.CHECKUSER)){
             TransferCenter.sendAnswerToUser(dataPacket.getDatagramChannel(), userAnalysis(dataPacket));
         }
-
 
         CommandsData commandsData = dataPacket.getCommandsData();
 
