@@ -129,7 +129,7 @@ public class FlatCollection {
 //        }
 
 
-
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
 
 
 //        SortFlatArrBySize sortFlatArrBySize = new SortFlatArrBySize();
@@ -140,12 +140,12 @@ public class FlatCollection {
 //        dataBlock.setUserNeedToShowFlatArr(true);
 
         commandsData.setUserNeedToShowFlatArr(true);
-        commandsData.setPhrase("Содержимое коллекции: \n");
+        commandsData.setPhrase(resourceBundle.getString("Содержимое коллекции: \n"));
 //        commandsData.setFlats(sortFlatArrBySize.startSorting(flats));
 
 
         if(commandsData.getFlats().length == 0){
-            commandsData.setPhrase("Коллекция пустая!");
+            commandsData.setPhrase(resourceBundle.getString("Коллекция пустая!"));
             commandsData.setUserNeedToShowFlatArr(false);
         }
         try {
@@ -158,7 +158,7 @@ public class FlatCollection {
                 commandsData.setCommandEnded(false);
             }
         }catch (Exception e){
-            System.out.println("Class:FlatCollection Creator = tcommandsData.getCreator()");
+//            System.out.println("Class:FlatCollection Creator = tcommandsData.getCreator()");
             e.printStackTrace();
         }
 
@@ -180,20 +180,22 @@ public class FlatCollection {
 
     //рализация команды
     public void add(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
 //        System.out.println("add");
         CommandsData commandsData = dataPacket.getCommandsData();
 //        DataBlock dataBlock = new DataBlock();
         if(commandsData.getCreator().equals(Creator.USER)){
+
 //            commandsData.getFlat().show();
 //            System.out.println(dbWorking == null);
 //            System.out.println(dbWorking.pushNewFlat(new Flat()));
 //            dbWorking.pushNewFlat(commandsData.getFlat());
             if(dbWorking.pushNewFlat(commandsData.getFlat())){
                 collectionOfFlats.add(commandsData.getFlat());
-                commandsData.setPhrase("Объект добавлен в коллекцию!");
+                commandsData.setPhrase(resourceBundle.getString("Объект добавлен в коллекцию!"));
             }
             else {
-                commandsData.setPhrase("Проблема с загрузкой объекта в базу данных!");
+                commandsData.setPhrase(resourceBundle.getString("Проблема с загрузкой объекта в базу данных!"));
             }
 //            System.out.println("ttt");
 //            collectionOfFlats.add(commandsData.getFlat());
@@ -209,10 +211,10 @@ public class FlatCollection {
             flat.setUserName(dataPacket.getUser().getLogin());
             if(dbWorking.pushNewFlat(flat)){
                 collectionOfFlats.add(flat);
-                commandsData.setPhrase("Объект добавлен в коллекцию!");
+                commandsData.setPhrase(resourceBundle.getString("Объект добавлен в коллекцию!"));
             }
             else {
-                commandsData.setPhrase("Проблема с загрузкой объекта в базу данных!");
+                commandsData.setPhrase(resourceBundle.getString("Проблема с загрузкой объекта в базу данных!"));
             }
 //            collectionOfFlats.add(flat);
 //            commandsData.setPhrase("Объект добавлен в коллекцию!");
@@ -264,6 +266,7 @@ public class FlatCollection {
 
     //Работает только от запроса сервера
     public void save(FlatCollection flatCollection, String fileAddress) {
+
         UpLoadingCollectionToFile output = new UpLoadingCollectionToFile();
         try {
             output.save(output.convert(flatCollection), fileAddress);
@@ -276,6 +279,7 @@ public class FlatCollection {
     }
 
     public void removeHead(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
         CommandsData commandsData = dataPacket.getCommandsData();
         Iterator iterator = collectionOfFlats.iterator();
         Flat flat;
@@ -303,7 +307,7 @@ public class FlatCollection {
                         iterator.remove();
                         commandsData.setFlats(flatForSending);
                         commandsData.setUserNeedToShowFlatArr(true);
-                        commandsData.setPhrase("Эллемент удалён!");
+                        commandsData.setPhrase(resourceBundle.getString("Эллемент удалён!"));
                         if(commandsData.getCreator().equals(Creator.USER)){
                             commandsData.setCommandEnded(true);
                             answersWaitingSending.add(dataPacket);
@@ -332,7 +336,7 @@ public class FlatCollection {
         }
         else {
             if(commandsData.getCreator().equals(Creator.USER)){
-                commandsData.setPhrase("Коллекция пустая!");
+                commandsData.setPhrase(resourceBundle.getString("Коллекция пустая!"));
 //                dataBlock.setAllRight(true);
                 commandsData.setCommandEnded(true);
 //                transferCenter.sendObjectToUser(dataBlock);
@@ -340,7 +344,7 @@ public class FlatCollection {
                 answersWaitingSending.add(dataPacket);
             }
             else {
-                commandsData.setPhrase("Коллекция пустая!");
+                commandsData.setPhrase(resourceBundle.getString("Коллекция пустая!"));
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
 //                commandsData.sendObjectToUser(dataBlock);
@@ -352,6 +356,7 @@ public class FlatCollection {
     }
 
     public void sumOfNumberOfRooms(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
         CommandsData commandsData = dataPacket.getCommandsData();
         Iterator iterator = collectionOfFlats.iterator();
         BigInteger numberOfRooms = BigInteger.valueOf(0);
@@ -366,16 +371,16 @@ public class FlatCollection {
                 }catch (Exception e){
 
 //                    System.out.println("Общее число комнат слишком большое! Перполнен BigInteger!");
-                    commandsData.setPhrase("Общее число комнат слишком большое! Перполнен BigInteger!");
+                    commandsData.setPhrase(resourceBundle.getString("Общее число комнат слишком большое! Перполнен BigInteger!"));
                 }
 
             }
 //            System.out.println("Общее число комнат во всех квартирах: " + numberOfRooms);
-            commandsData.setPhrase("Общее число комнат во всех квартирах: " + numberOfRooms);
+            commandsData.setPhrase(resourceBundle.getString("Общее число комнат во всех квартирах: " + numberOfRooms));
         }
         else {
 //            System.out.println("В коллекции нет квартир!");
-            commandsData.setPhrase("В коллекции нет квартир!");
+            commandsData.setPhrase(resourceBundle.getString("В коллекции нет квартир!"));
         }
         if(commandsData.getCreator().equals(Creator.USER)){
 //            commandsData.setAllRight(true);
@@ -395,6 +400,7 @@ public class FlatCollection {
     }
 
     public void addIfMin(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
         CommandsData commandsData = dataPacket.getCommandsData();
         Iterator iterator = getIterator();
         long min;
@@ -413,20 +419,20 @@ public class FlatCollection {
                 if(dbWorking.pushNewFlat(newFlat))
                 {
                     collectionOfFlats.add(newFlat);
-                    commandsData.setPhrase("Добавляем элемент в коллекцию!");
+                    commandsData.setPhrase(resourceBundle.getString("Добавляем элемент в коллекцию!"));
                 }
                 else{
-                    commandsData.setPhrase("Проблема с загрузкой новой квартиры в базу данных!");
+                    commandsData.setPhrase(resourceBundle.getString("Проблема с загрузкой новой квартиры в базу данных!"));
                 }
             }
             else {
                 //НАверное нужно переделать на слишком маленькую
-                commandsData.setPhrase("Привлекательность элемента слишком большая!");
+                commandsData.setPhrase(resourceBundle.getString("Привлекательность элемента слишком большая!"));
             }
         }
         else {
 //            System.out.println("Пустая коллекция!");
-            commandsData.setPhrase("Пустая коллекция!");
+            commandsData.setPhrase(resourceBundle.getString("Пустая коллекция!"));
         }
         if(commandsData.getCreator().equals(Creator.USER)){
 //            commandsData.setAllRight(true);
@@ -448,6 +454,7 @@ public class FlatCollection {
 
     public void updateId(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
         CommandsData commandsData = dataPacket.getCommandsData();
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
 
         Flat oldFlat = null;
         long id;
@@ -471,7 +478,7 @@ public class FlatCollection {
         }
 //        DataBlock dataBlock = new DataBlock();
         if(flatId == null){
-            commandsData.setPhrase("Неправильно введён ID!\nВведите ID занова:");
+            commandsData.setPhrase(resourceBundle.getString("Неправильно введён ID!\nВведите ID занова:"));
             commandsData.setServerNeedStringParameter(true);
 //            dataBlock.setAllRight(false);
             commandsData.setCommandEnded(false);
@@ -489,7 +496,7 @@ public class FlatCollection {
                     commandsData.setServerNeedElementParameter(true);
 //                    requestAboutElement.setAllRight(false);
                     commandsData.setCommandEnded(false);
-                    commandsData.setPhrase("Приступаем к обновлению параметров файла с ID: " + id);
+                    commandsData.setPhrase(resourceBundle.getString("Приступаем к обновлению параметров файла с ID: ") + id);
 //                transferCenter.sendObjectToUser(requestAboutElement);
 //                    commandsData.setServerNeedElementParameter(true);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -502,10 +509,10 @@ public class FlatCollection {
                     flat.setId(id);
                     if (dbWorking.pushNewFlat(flat)){
                         collectionOfFlats.add(flat);
-                        commandsData.setPhrase("Элемент успешно обновлён!");
+                        commandsData.setPhrase(resourceBundle.getString("Элемент успешно обновлён!"));
                     }
                     else {
-                        commandsData.setPhrase("Проблема с загрузкой обновлённого элемента в базу данных!");
+                        commandsData.setPhrase(resourceBundle.getString("Проблема с загрузкой обновлённого элемента в базу данных!"));
                         add(oldFlat);
                     }
 
@@ -530,7 +537,7 @@ public class FlatCollection {
                 collectionOfFlats.add(flat);
 
 //                dataBlock = new DataBlock();
-                commandsData.setPhrase("Приступаем к обновлению параметров файла с ID: " + id + "\n" + "Элемент обновлён!");
+                commandsData.setPhrase(resourceBundle.getString("Приступаем к обновлению параметров файла с ID: ") + id + "\n" + resourceBundle.getString("Элемент обновлён!"));
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
 //                transferCenter.sendObjectToUser(dataBlock);
@@ -542,6 +549,7 @@ public class FlatCollection {
     }
 
     public void removeById(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket, DBWorking dbWorking){
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
         CommandsData commandsData = dataPacket.getCommandsData();
         if(commandsData.getCreator().equals(Creator.USER)){
             long id = Long.valueOf(commandsData.getParameter());
@@ -567,7 +575,7 @@ public class FlatCollection {
                 }
             }
             if(nonElement){
-                commandsData.setPhrase("Квартиры с таким ID не существует!\nПопробуйте ввести ID занова.");
+                commandsData.setPhrase(resourceBundle.getString("Квартиры с таким ID не существует!\nПопробуйте ввести ID занова."));
                 commandsData.setServerNeedStringParameter(true);
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
@@ -589,7 +597,7 @@ public class FlatCollection {
                 if(((Flat)iterator.next()).getId() == id){
                     iterator.remove();
                     nonElement = false;
-                    commandsData.setPhrase("Элемент удалён.");
+                    commandsData.setPhrase(resourceBundle.getString("Элемент удалён."));
 //                System.out.println("Элемент удалён.");
 //                    dataBlock.setAllRight(false);
                     commandsData.setCommandEnded(false);
@@ -614,6 +622,7 @@ public class FlatCollection {
     }
 
     public void removeLower(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket) {
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
         CommandsData commandsData = dataPacket.getCommandsData();
         Flat flatForeCompare;
         if(commandsData.getCreator().equals(Creator.USER)){
@@ -638,7 +647,7 @@ public class FlatCollection {
             if(commandsData.getCreator().equals(Creator.USER)){
                 if(nonElement){
 //                System.out.println("Нет подходящих для удаления элементов");
-                    commandsData.setPhrase("Нет подходящих для удаления элементов");
+                    commandsData.setPhrase(resourceBundle.getString("Нет подходящих для удаления элементов"));
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -647,7 +656,7 @@ public class FlatCollection {
                 }
                 else {
 //                System.out.println("Подходящие элементы были удалены.");
-                    commandsData.setPhrase("Подходящие элементы были удалены.");
+                    commandsData.setPhrase(resourceBundle.getString("Подходящие элементы были удалены."));
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
 //                    transferCenter.sendObjectToUser(dataBlock);
@@ -658,7 +667,7 @@ public class FlatCollection {
             else {
                 if (nonElement) {
 //                System.out.println("Нет подходящих для удаления элементов");
-                    commandsData.setPhrase("Нет подходящих для удаления элементов");
+                    commandsData.setPhrase(resourceBundle.getString("Нет подходящих для удаления элементов"));
 //                    dataBlock.setAllRight(false);
                     commandsData.setCommandEnded(false);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -667,7 +676,7 @@ public class FlatCollection {
 //                    transferCenter.receiveObjectFromUser();
                 } else {
 //                System.out.println("Подходящие элементы были удалены.");
-                    commandsData.setPhrase("Подходящие элементы были удалены.");
+                    commandsData.setPhrase(resourceBundle.getString("Подходящие элементы были удалены."));
 //                    dataBlock.setAllRight(false);
                     commandsData.setCommandEnded(false);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -680,7 +689,7 @@ public class FlatCollection {
         else {
             if(commandsData.getCreator().equals(Creator.USER)){
 //                System.out.println("Коллекция пустая!");
-                commandsData.setPhrase("Коллекция пустая!");
+                commandsData.setPhrase(resourceBundle.getString("Коллекция пустая!"));
 //                dataBlock.setAllRight(true);
                 commandsData.setCommandEnded(true);
 //                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -689,7 +698,7 @@ public class FlatCollection {
             }
             else {
 //                System.out.println("Коллекция пустая!");
-                commandsData.setPhrase("Коллекция пустая!");
+                commandsData.setPhrase(resourceBundle.getString("Коллекция пустая!"));
 //                dataBlock.setAllRight(false);
                 commandsData.setCommandEnded(false);
 //                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -701,6 +710,7 @@ public class FlatCollection {
     }
 
     public void printFieldAscendingNumberOfRooms(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
         CommandsData commandsData = dataPacket.getCommandsData();
 
         Flat[] flats = new Flat[0];
@@ -712,7 +722,7 @@ public class FlatCollection {
                 flats[i] = (Flat) obj[i];
             }
         }catch (Exception e){
-            System.out.println("Проблемма с загрузкой коллекции в массив в методе printFieldAscendingNumberOfRooms");
+            System.out.println(resourceBundle.getString("Проблемма с загрузкой коллекции в массив в методе printFieldAscendingNumberOfRooms"));
         }
 
 //        DataBlock dataBlock = new DataBlock();
@@ -731,7 +741,7 @@ public class FlatCollection {
                 }
             }
             String phrase;
-            phrase = "Выводим элементы в порядке возрастания количества комнат:\n";
+            phrase = resourceBundle.getString("Выводим элементы в порядке возрастания количества комнат:\n");
             for (int i =0;i<flats.length;i++){
                 phrase += "ID - " + flats[i].getId() + " numberOfRooms - " + flats[i].getNumberOfRooms() + "\n";
             }
@@ -756,7 +766,7 @@ public class FlatCollection {
         else {
             if(commandsData.getCreator().equals(Creator.USER)){
                 if(flats.length == 1){
-                    commandsData.setPhrase("В коллекции содержится всего один элемент: ID - " + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
+                    commandsData.setPhrase(resourceBundle.getString("В коллекции содержится всего один элемент: ID - ") + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -765,7 +775,7 @@ public class FlatCollection {
                 }
                 else {
 //                System.out.println("Коллекция пустая!");
-                    commandsData.setPhrase("Коллекция пустая!");
+                    commandsData.setPhrase(resourceBundle.getString("Коллекция пустая!"));
                     commandsData.setCommandEnded(true);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                     answersWaitingSending.add(dataPacket);
@@ -775,7 +785,7 @@ public class FlatCollection {
             }
             else {
                 if(flats.length == 1){
-                    commandsData.setPhrase("В коллекции содержится всего один элемент: ID - " + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
+                    commandsData.setPhrase(resourceBundle.getString("В коллекции содержится всего один элемент: ID - ") + flats[0].getId() + " numberOfRooms - " + flats[0].getNumberOfRooms()+ "\n");
                     commandsData.setCommandEnded(false);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                     answersWaitingSending.add(dataPacket);
@@ -785,7 +795,7 @@ public class FlatCollection {
                 }
                 else {
 //                System.out.println("Коллекция пустая!");
-                    commandsData.setPhrase("Коллекция пустая!");
+                    commandsData.setPhrase(resourceBundle.getString("Коллекция пустая!"));
                     commandsData.setCommandEnded(false);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                     answersWaitingSending.add(dataPacket);
@@ -800,6 +810,7 @@ public class FlatCollection {
 
     public void filterLessThanTransport(ConcurrentLinkedQueue<DataPacket> answersWaitingSending, DataPacket dataPacket){
         CommandsData commandsData = dataPacket.getCommandsData();
+        ResourceBundle resourceBundle = Main.getResourceByName(dataPacket.getResourceBundleName());
 
         Transport transport;
 //        DataBlock dataBlock = new DataBlock();
@@ -813,7 +824,7 @@ public class FlatCollection {
         }catch (Exception e){
 //            commandsData.setAllRight(false);
             commandsData.setCommandEnded(false);
-            commandsData.setPhrase("Такого варианта транспора не существует!\nВведите другой.");
+            commandsData.setPhrase(resourceBundle.getString("Такого варианта транспора не существует!\nВведите другой."));
             commandsData.setServerNeedStringParameter(true);
 //            TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
             answersWaitingSending.add(dataPacket);
@@ -859,7 +870,7 @@ public class FlatCollection {
             }
             if(!wasPrinted){
                 if(commandsData.getCreator().equals(Creator.USER)){
-                    commandsData.setPhrase("Нет ни одного подходящего элемента в коллекции!");
+                    commandsData.setPhrase(resourceBundle.getString("Нет ни одного подходящего элемента в коллекции!"));
 //                    dataBlock.setAllRight(true);
                     commandsData.setCommandEnded(true);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -867,7 +878,7 @@ public class FlatCollection {
 //                    transferCenter.sendObjectToUser(dataBlock);
                 }
                 else {
-                    commandsData.setPhrase("Нет ни одного подходящего элемента в коллекции!");
+                    commandsData.setPhrase(resourceBundle.getString("Нет ни одного подходящего элемента в коллекции!"));
                     commandsData.setCommandEnded(false);
 //                    TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                     answersWaitingSending.add(dataPacket);
@@ -881,7 +892,7 @@ public class FlatCollection {
         else {
 //            System.out.println("В коллекции нет элементов для сравнения!");
             if(commandsData.getCreator().equals(Creator.USER)){
-                commandsData.setPhrase("В коллекции нет элементов для сравнения!");
+                commandsData.setPhrase(resourceBundle.getString("В коллекции нет элементов для сравнения!"));
 //                dataBlock.setAllRight(true);
                 commandsData.setCommandEnded(true);
 //                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
@@ -889,7 +900,7 @@ public class FlatCollection {
 //                transferCenter.sendObjectToUser(dataBlock);
             }
             else {
-                commandsData.setPhrase("В коллекции нет элементов для сравнения!");
+                commandsData.setPhrase(resourceBundle.getString("В коллекции нет элементов для сравнения!"));
                 commandsData.setCommandEnded(false);
 //                TransferCenter.sendAnswerToUser(datagramChannel, commandsData);
                 answersWaitingSending.add(dataPacket);
