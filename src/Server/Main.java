@@ -106,6 +106,14 @@ public class Main {
             if(resourceName.equals("Resources.Resources_de")){
                 return ResourceBundle.getBundle("Resources.Resources_de");
             }
+            if(resourceName.equals("Resources.Resources_lv")){
+                return ResourceBundle.getBundle("Resources.Resources_lv");
+            }
+            if(resourceName.equals("Resources.Resources_es")){
+                return ResourceBundle.getBundle("Resources.Resources_es");
+            }
+
+
         }
         return ResourceBundle.getBundle("Resources.Resources_ru");
     }
@@ -117,6 +125,12 @@ public class Main {
             }
             if (resourceName.equals("Resources.Resources_de")) {
                 return new Locale("de", "GR");
+            }
+            if (resourceName.equals("Resources.Resources_lv")) {
+                return new Locale("lv", "LV");
+            }
+            if (resourceName.equals("Resources.Resources_es")) {
+                return new Locale("es", "ES");
             }
         }
         return new Locale("ru", "Ru");
