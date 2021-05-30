@@ -6,11 +6,16 @@ import CommonClasses.ApartmentDescription.*;
 
 import java.io.Serializable;
 import java.lang.instrument.Instrumentation;
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Flat implements Serializable, Comparable<Flat>{
 
     static final long serialVersionUID = 2;
+
+    private String userName;
 
     private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
@@ -23,42 +28,40 @@ public class Flat implements Serializable, Comparable<Flat>{
     private Transport transport; //Поле может быть null
     private House house; //Поле может быть null
 
-    public void show(){
-        System.out.printf("%-30s %s \n", "id", id);
-        System.out.printf("%-30s %s \n", "name", name);
-        System.out.println("coordinates:");
-        coordinates.show();
-//        System.out.println("creationDate:\t\t\t\t" + creationDate);
-        System.out.printf("%-30s %s \n", "creationDate", creationDate);
-        System.out.printf("%-30s %s \n", "area", area);
-        System.out.printf("%-30s %s \n", "numberOfRooms", numberOfRooms);
-        System.out.printf("%-30s %s \n", "furnish", furnish.name());
-//        System.out.println("area:\t\t\t\t" + area);
-//        System.out.println("numberOfRooms:\t\t\t\t" + numberOfRooms);
-//        System.out.println("furnish:\t\t\t\t"+furnish.name());
+    public String show(Locale locale){
+
+//        DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale).format(creationDate);
+
+        String str = new String();
+
+        str += String.format("%-30s %s \n", "userName", userName);
+        str += String.format("%-30s %s \n", "id", id);
+        str += String.format("%-30s %s \n", "name", name);
+        str += String.format("coordinates:");
+        str += coordinates.show();
+        str += String.format("%-30s %s \n", "creationDate", DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, locale).format(creationDate));
+        str += String.format("%-30s %s \n", "area", area);
+        str += String.format("%-30s %s \n", "numberOfRooms", numberOfRooms);
+        str += String.format("%-30s %s \n", "furnish", furnish.name());
 
         try {
-//            System.out.println("view:\t\t\t\t" + view.name());
-            System.out.printf("%-30s %s \n", "view", view.name());
+            str += String.format("%-30s %s \n", "view", view.name());
         }catch (Exception e){
-            System.out.println("view - пустое поле");
+            str += String.format("view - пустое поле");
         }
         try {
-//            System.out.println("transport:\t\t\t\t" + transport.name());
-            System.out.printf("%-30s %s \n", "transport", transport.name());
+            str += String.format("%-30s %s \n", "transport", transport.name());
         }catch (Exception e){
-            System.out.println("transport - пустое поле");
+            str += String.format("transport - пустое поле");
         }
         try {
-            System.out.println("house:");
-            house.getFields();
+            str += String.format("house:");
+            str += house.getFields();
         }catch (Exception e){
-            System.out.println("house - пустое поле");
+            str += String.format("house - пустое поле");
         }
 
-
-
-        System.out.println("\n\n");
+        return str;
     }
 
     public static Flat createFlat(Long id){
@@ -80,6 +83,13 @@ public class Flat implements Serializable, Comparable<Flat>{
     }
 
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public Long getId() {
         return id;

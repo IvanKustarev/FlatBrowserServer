@@ -2,10 +2,15 @@ package CommonClasses;
 
 import java.io.BufferedReader;
 import java.io.Serializable;
+import java.util.ResourceBundle;
 import java.util.Stack;
 
 public class DataBlock implements Serializable {
     static final long serialVersionUID = 1;
+
+    private User user;
+
+    private String resourceBundleName;
 
     private CommandsData commandsData = null;
 
@@ -15,6 +20,14 @@ public class DataBlock implements Serializable {
 
     public CommandsData getCommandsData() {
         return commandsData;
+    }
+
+    public String getResourceBundleName() {
+        return resourceBundleName;
+    }
+
+    public void setResourceBundleName(String resourceBundleName) {
+        this.resourceBundleName = resourceBundleName;
     }
 
     //    commandWithElementParameter ======================================================
@@ -156,5 +169,18 @@ public class DataBlock implements Serializable {
 
     public Flat[] getFlats() {
         return flats;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public static DataBlock creteNew(){
+        return new DataBlock();
     }
 }
